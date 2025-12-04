@@ -3,7 +3,8 @@ import io
 import json
 import logging
 import os
-from typing import AsyncIterator, Literal, Optional
+from typing import Literal
+from collections.abc import AsyncIterator
 
 import av
 import httpx
@@ -24,7 +25,7 @@ class TTS(tts.TTS):
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         voice_id: str = "Dennis",
         model_id: Literal["inworld-tts-1", "inworld-tts-1-max"] = "inworld-tts-1",
         temperature: float = 1.1,
@@ -137,7 +138,7 @@ class TTS(tts.TTS):
                     assert isinstance(container, av.container.InputContainer)
                     with container:
                         audio_stream = container.streams.audio[0]
-                        pcm: Optional[PcmData] = None
+                        pcm: PcmData | None = None
                         for frame in container.decode(audio_stream):
                             frame_pcm = PcmData.from_av_frame(frame)
                             if pcm is None:

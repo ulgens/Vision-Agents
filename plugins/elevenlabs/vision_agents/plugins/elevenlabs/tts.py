@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import AsyncIterator, Iterator, Optional
+from collections.abc import AsyncIterator, Iterator
 
 from elevenlabs.client import AsyncElevenLabs
 from vision_agents.core import tts
@@ -12,10 +12,10 @@ logger = logging.getLogger(__name__)
 class TTS(tts.TTS):
     def __init__(
         self,
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         voice_id: str = "VR6AewLTigWG4xSOukaG",  # Default ElevenLabs voice
         model_id: str = "eleven_multilingual_v2",
-        client: Optional[AsyncElevenLabs] = None,
+        client: AsyncElevenLabs | None = None,
     ):
         """
         Initialize the ElevenLabs TTS service.

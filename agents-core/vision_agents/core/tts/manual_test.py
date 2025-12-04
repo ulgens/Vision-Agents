@@ -1,5 +1,3 @@
-from typing import Optional
-
 import aiofiles
 from getstream.video.rtc import PcmData
 from vision_agents.core.tts import TTS
@@ -16,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 async def play_pcm_with_ffplay(
     pcm: PcmData,
-    outfile_path: Optional[str] = None,
+    outfile_path: str | None = None,
     timeout_s: float = 30.0,
 ) -> str:
     """Write PcmData to a WAV file and optionally play it with ffplay.
@@ -87,7 +85,7 @@ async def manual_tts_to_wav(
     sample_rate: int = 16000,
     channels: int = 1,
     text: str = "This is a manual TTS playback test.",
-    outfile_path: Optional[str] = None,
+    outfile_path: str | None = None,
     timeout_s: float = 20.0,
 ) -> str:
     """Generate TTS audio to a WAV file and optionally play with ffplay.

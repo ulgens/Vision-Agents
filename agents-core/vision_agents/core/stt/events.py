@@ -1,16 +1,16 @@
 from vision_agents.core.events import PluginBaseEvent, ConnectionState
 from dataclasses import dataclass, field
-from typing import Optional, Any
+from typing import Any
 
 
 @dataclass
 class TranscriptResponse:
-    confidence: Optional[float] = None
-    language: Optional[str] = None
-    processing_time_ms: Optional[float] = None
-    audio_duration_ms: Optional[float] = None
-    model_name: Optional[str] = None
-    other: Optional[dict] = None
+    confidence: float | None = None
+    language: str | None = None
+    processing_time_ms: float | None = None
+    audio_duration_ms: float | None = None
+    model_name: str | None = None
+    other: dict | None = None
 
 
 @dataclass
@@ -27,23 +27,23 @@ class STTTranscriptEvent(PluginBaseEvent):
 
     # Convenience properties for backward compatibility
     @property
-    def confidence(self) -> Optional[float]:
+    def confidence(self) -> float | None:
         return self.response.confidence
 
     @property
-    def language(self) -> Optional[str]:
+    def language(self) -> str | None:
         return self.response.language
 
     @property
-    def processing_time_ms(self) -> Optional[float]:
+    def processing_time_ms(self) -> float | None:
         return self.response.processing_time_ms
 
     @property
-    def audio_duration_ms(self) -> Optional[float]:
+    def audio_duration_ms(self) -> float | None:
         return self.response.audio_duration_ms
 
     @property
-    def model_name(self) -> Optional[str]:
+    def model_name(self) -> str | None:
         return self.response.model_name
 
 
@@ -57,23 +57,23 @@ class STTPartialTranscriptEvent(PluginBaseEvent):
 
     # Convenience properties for backward compatibility
     @property
-    def confidence(self) -> Optional[float]:
+    def confidence(self) -> float | None:
         return self.response.confidence
 
     @property
-    def language(self) -> Optional[str]:
+    def language(self) -> str | None:
         return self.response.language
 
     @property
-    def processing_time_ms(self) -> Optional[float]:
+    def processing_time_ms(self) -> float | None:
         return self.response.processing_time_ms
 
     @property
-    def audio_duration_ms(self) -> Optional[float]:
+    def audio_duration_ms(self) -> float | None:
         return self.response.audio_duration_ms
 
     @property
-    def model_name(self) -> Optional[str]:
+    def model_name(self) -> str | None:
         return self.response.model_name
 
 
@@ -82,9 +82,9 @@ class STTErrorEvent(PluginBaseEvent):
     """Event emitted when an STT error occurs."""
 
     type: str = field(default="plugin.stt_error", init=False)
-    error: Optional[Exception] = None
-    error_code: Optional[str] = None
-    context: Optional[str] = None
+    error: Exception | None = None
+    error_code: str | None = None
+    context: str | None = None
     retry_count: int = 0
     is_recoverable: bool = True
 
@@ -98,7 +98,7 @@ class STTConnectionEvent(PluginBaseEvent):
     """Event emitted for STT connection state changes."""
 
     type: str = field(default="plugin.stt_connection", init=False)
-    connection_state: Optional[ConnectionState] = None
-    provider: Optional[str] = None
-    details: Optional[dict[str, Any]] = None
+    connection_state: ConnectionState | None = None
+    provider: str | None = None
+    details: dict[str, Any] | None = None
     reconnect_attempts: int = 0

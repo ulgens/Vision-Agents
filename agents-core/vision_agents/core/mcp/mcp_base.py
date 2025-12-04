@@ -3,7 +3,7 @@
 import asyncio
 import logging
 from abc import ABC, abstractmethod
-from typing import Optional, Dict, Any, List
+from typing import Any
 from mcp import ClientSession, types
 
 
@@ -18,10 +18,10 @@ class MCPBaseServer(ABC):
         """
         self.session_timeout = session_timeout
         self.logger = logging.getLogger(__name__)
-        self._session: Optional[ClientSession] = None
+        self._session: ClientSession | None = None
         self._is_connected = False
-        self._last_activity: Optional[float] = None
-        self._timeout_task: Optional[asyncio.Task] = None
+        self._last_activity: float | None = None
+        self._timeout_task: asyncio.Task | None = None
 
     @abstractmethod
     async def connect(self) -> None:
@@ -97,7 +97,7 @@ class MCPBaseServer(ABC):
                     )
                     raise
 
-    async def _list_tools_impl(self) -> List[types.Tool]:
+    async def _list_tools_impl(self) -> list[types.Tool]:
         """Internal implementation of list_tools without retry logic."""
         if not self._session or not self._is_connected:
             raise RuntimeError("Not connected to MCP server")
@@ -107,7 +107,7 @@ class MCPBaseServer(ABC):
         return response.tools
 
     async def _call_tool_impl(
-        self, name: str, arguments: Dict[str, Any]
+        self, name: str, arguments: dict[str, Any]
     ) -> types.CallToolResult:
         """Internal implementation of call_tool without retry logic."""
         if not self._session or not self._is_connected:
@@ -116,7 +116,7 @@ class MCPBaseServer(ABC):
         await self._update_activity()
         return await self._session.call_tool(name, arguments)
 
-    async def _list_resources_impl(self) -> List[types.Resource]:
+    async def _list_resources_impl(self) -> list[types.Resource]:
         """Internal implementation of list_resources without retry logic."""
         if not self._session or not self._is_connected:
             raise RuntimeError("Not connected to MCP server")
@@ -135,7 +135,7 @@ class MCPBaseServer(ABC):
 
         return await self._session.read_resource(AnyUrl(uri))
 
-    async def _list_prompts_impl(self) -> List[types.Prompt]:
+    async def _list_prompts_impl(self) -> list[types.Prompt]:
         """Internal implementation of list_prompts without retry logic."""
         if not self._session or not self._is_connected:
             raise RuntimeError("Not connected to MCP server")
@@ -145,7 +145,7 @@ class MCPBaseServer(ABC):
         return response.prompts
 
     async def _get_prompt_impl(
-        self, name: str, arguments: Dict[str, Any]
+        self, name: str, arguments: dict[str, Any]
     ) -> types.GetPromptResult:
         """Internal implementation of get_prompt without retry logic."""
         if not self._session or not self._is_connected:
@@ -154,19 +154,19 @@ class MCPBaseServer(ABC):
         await self._update_activity()
         return await self._session.get_prompt(name, arguments)
 
-    async def list_tools(self) -> List[types.Tool]:
+    async def list_tools(self) -> list[types.Tool]:
         """List available tools from the MCP server with auto-reconnect."""
         return await self._call_with_retry("list_tools", self._list_tools_impl)
 
     async def call_tool(
-        self, name: str, arguments: Dict[str, Any]
+        self, name: str, arguments: dict[str, Any]
     ) -> types.CallToolResult:
         """Call a tool on the MCP server with auto-reconnect."""
         return await self._call_with_retry(
             "call_tool", self._call_tool_impl, name, arguments
         )
 
-    async def list_resources(self) -> List[types.Resource]:
+    async def list_resources(self) -> list[types.Resource]:
         """List available resources from the MCP server with auto-reconnect."""
         return await self._call_with_retry("list_resources", self._list_resources_impl)
 
@@ -176,12 +176,12 @@ class MCPBaseServer(ABC):
             "read_resource", self._read_resource_impl, uri
         )
 
-    async def list_prompts(self) -> List[types.Prompt]:
+    async def list_prompts(self) -> list[types.Prompt]:
         """List available prompts from the MCP server with auto-reconnect."""
         return await self._call_with_retry("list_prompts", self._list_prompts_impl)
 
     async def get_prompt(
-        self, name: str, arguments: Dict[str, Any]
+        self, name: str, arguments: dict[str, Any]
     ) -> types.GetPromptResult:
         """Get a prompt from the MCP server with auto-reconnect."""
         return await self._call_with_retry(

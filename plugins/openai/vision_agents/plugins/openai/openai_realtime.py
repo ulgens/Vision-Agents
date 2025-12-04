@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Any, Optional, List, Dict, Union
+from typing import Any
 
 import aiortc
 from openai import AsyncOpenAI
@@ -72,11 +72,11 @@ class Realtime(realtime.Realtime):
     def __init__(
         self,
         model: str = "gpt-realtime",
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         voice: str = "marin",
-        client: Optional[AsyncOpenAI] = None,
+        client: AsyncOpenAI | None = None,
         fps: int = 1,
-        realtime_session: Optional[RealtimeSessionCreateRequestParam] = None,
+        realtime_session: RealtimeSessionCreateRequestParam | None = None,
         send_video: bool = True,
     ):
         super().__init__(fps)
@@ -103,20 +103,18 @@ class Realtime(realtime.Realtime):
         self.realtime_session["audio"]["output"]["voice"] = self.voice
 
         # Map conversation item_id to participant to handle multi-user scenarios
-        self._item_to_participant: Dict[str, Participant] = {}
-        self._pending_participant: Optional[Participant] = None
+        self._item_to_participant: dict[str, Participant] = {}
+        self._pending_participant: Participant | None = None
 
         # Track pending tool calls: item_id -> {call_id, name, argument_parts: []}
         # We accumulate argument deltas until response.output_item.done
-        self._pending_tool_calls: Dict[str, Dict[str, Any]] = {}
+        self._pending_tool_calls: dict[str, dict[str, Any]] = {}
 
         # Store current session and rate limits
-        self.current_session: Optional[
-            Union[
-                RealtimeSessionCreateRequest, RealtimeTranscriptionSessionCreateRequest
-            ]
-        ] = None
-        self.current_rate_limits: Optional[RateLimitsUpdatedEvent] = None
+        self.current_session: None | (
+            RealtimeSessionCreateRequest | RealtimeTranscriptionSessionCreateRequest
+        ) = None
+        self.current_rate_limits: RateLimitsUpdatedEvent | None = None
 
         # create the client
         if client is not None:
@@ -165,8 +163,8 @@ class Realtime(realtime.Realtime):
     async def simple_response(
         self,
         text: str,
-        processors: Optional[List[Processor]] = None,
-        participant: Optional[Participant] = None,
+        processors: list[Processor] | None = None,
+        participant: Participant | None = None,
     ):
         """Send a simple text input to the OpenAI Realtime session.
 
@@ -184,7 +182,7 @@ class Realtime(realtime.Realtime):
         await self.rtc.send_text(text)
 
     async def simple_audio_response(
-        self, audio: PcmData, participant: Optional[Participant] = None
+        self, audio: PcmData, participant: Participant | None = None
     ):
         """Send a single PCM audio frame to the OpenAI Realtime session.
 
@@ -378,7 +376,7 @@ class Realtime(realtime.Realtime):
     async def watch_video_track(
         self,
         track: aiortc.mediastreams.MediaStreamTrack,
-        shared_forwarder: Optional[VideoForwarder] = None,
+        shared_forwarder: VideoForwarder | None = None,
     ) -> None:
         """
         Watch the video track and forward data to OpenAI Realtime API.
@@ -435,7 +433,7 @@ class Realtime(realtime.Realtime):
         await self._send_tool_response(call_id, response_data)
 
     async def _send_tool_response(
-        self, call_id: Optional[str], response_data: Dict[str, Any]
+        self, call_id: str | None, response_data: dict[str, Any]
     ) -> None:
         """Send tool response back to OpenAI realtime session.
 

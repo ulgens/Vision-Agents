@@ -2,7 +2,8 @@ import asyncio
 import datetime
 import logging
 from dataclasses import dataclass
-from typing import Any, Callable, Optional
+from typing import Any
+from collections.abc import Callable
 
 import av
 from aiortc import MediaStreamError, VideoStreamTrack
@@ -17,7 +18,7 @@ class FrameHandler:
     """Handler configuration for processing video frames."""
 
     callback: Callable[[av.VideoFrame], Any]
-    fps: Optional[float]
+    fps: float | None
     name: str
     last_ts: float = 0.0
 
@@ -41,7 +42,7 @@ class VideoForwarder:
         input_track: VideoStreamTrack,
         *,
         max_buffer: int = 10,
-        fps: Optional[float] = 30,
+        fps: float | None = 30,
         name: str = "video-forwarder",
     ):
         self.name = name
@@ -49,8 +50,8 @@ class VideoForwarder:
         self.queue: VideoLatestNQueue[Frame] = VideoLatestNQueue(maxlen=max_buffer)
         self.fps = fps  # None = unlimited, else forward at ~fps
 
-        self._producer_task: Optional[asyncio.Task] = None
-        self._consumer_task: Optional[asyncio.Task] = None
+        self._producer_task: asyncio.Task | None = None
+        self._consumer_task: asyncio.Task | None = None
         self._frame_handlers: list[FrameHandler] = []
         self._started = False
 
@@ -58,8 +59,8 @@ class VideoForwarder:
         self,
         on_frame: Callable[[av.VideoFrame], Any],
         *,
-        fps: Optional[float] = None,
-        name: Optional[str] = None,
+        fps: float | None = None,
+        name: str | None = None,
     ) -> None:
         """
         Register a callback to be called for each frame.

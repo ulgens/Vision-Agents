@@ -2,7 +2,7 @@ import asyncio
 import logging
 import warnings
 from concurrent.futures import ThreadPoolExecutor
-from typing import Literal, Optional, Type, cast
+from typing import Literal, cast
 
 import aiortc
 import av
@@ -43,7 +43,7 @@ RFDETRModelID = Literal[
     "rfdetr-seg-preview",
 ]
 
-_RFDETR_MODELS: dict[str, Type[RFDETR]] = {
+_RFDETR_MODELS: dict[str, type[RFDETR]] = {
     "rfdetr-base": RFDETRBase,
     "rfdetr-large": RFDETRLarge,
     "rfdetr-nano": RFDETRNano,
@@ -102,13 +102,13 @@ class RoboflowLocalDetectionProcessor(
 
     def __init__(
         self,
-        model_id: Optional[RFDETRModelID] = "rfdetr-seg-preview",
+        model_id: RFDETRModelID | None = "rfdetr-seg-preview",
         conf_threshold: float = 0.5,
         fps: int = 10,
-        classes: Optional[list[str]] = None,
+        classes: list[str] | None = None,
         annotate: bool = True,
         dim_background_factor: float = 0.0,
-        model: Optional[RFDETR] = None,
+        model: RFDETR | None = None,
     ):
         super().__init__(interval=0, receive_audio=False, receive_video=True)
 
@@ -117,8 +117,8 @@ class RoboflowLocalDetectionProcessor(
 
         self.conf_threshold = conf_threshold
 
-        self._model: Optional[RFDETR] = None
-        self._model_id: Optional[RFDETRModelID] = None
+        self._model: RFDETR | None = None
+        self._model_id: RFDETRModelID | None = None
 
         if model is not None:
             self._model = model
@@ -136,13 +136,13 @@ class RoboflowLocalDetectionProcessor(
         self.dim_background_factor = max(0.0, dim_background_factor)
         self.annotate = annotate
 
-        self._events: Optional[EventManager] = None
+        self._events: EventManager | None = None
 
         # Limit object detection to certain classes only.
         self._classes = classes or []
 
         self._closed = False
-        self._video_forwarder: Optional[VideoForwarder] = None
+        self._video_forwarder: VideoForwarder | None = None
 
         # Thread pool for async inference
         self._executor = ThreadPoolExecutor(
@@ -157,8 +157,8 @@ class RoboflowLocalDetectionProcessor(
     async def process_video(
         self,
         incoming_track: aiortc.MediaStreamTrack,
-        participant_id: Optional[str],
-        shared_forwarder: Optional[VideoForwarder] = None,
+        participant_id: str | None,
+        shared_forwarder: VideoForwarder | None = None,
     ):
         """
         Process incoming video track with Roboflow detection.

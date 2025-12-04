@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Any, Dict, List, Optional, cast
+from typing import Any, cast
 
 from getstream.video.rtc.pb.stream.video.sfu.models.models_pb2 import Participant
 from openai import AsyncOpenAI, AsyncStream
@@ -42,9 +42,9 @@ class ChatCompletionsLLM(LLM):
     def __init__(
         self,
         model: str,
-        api_key: Optional[str] = None,
-        base_url: Optional[str] = None,
-        client: Optional[AsyncOpenAI] = None,
+        api_key: str | None = None,
+        base_url: str | None = None,
+        client: AsyncOpenAI | None = None,
     ):
         """
         Initialize the ChatCompletionsLLM class.
@@ -59,7 +59,7 @@ class ChatCompletionsLLM(LLM):
         self.model = model
         self.events.register_events_from_module(events)
         # Track tool calls being accumulated during streaming
-        self._pending_tool_calls: Dict[int, Dict[str, Any]] = {}
+        self._pending_tool_calls: dict[int, dict[str, Any]] = {}
 
         if client is not None:
             self._client = client
@@ -69,8 +69,8 @@ class ChatCompletionsLLM(LLM):
     async def simple_response(
         self,
         text: str,
-        processors: Optional[list[Processor]] = None,
-        participant: Optional[Participant] = None,
+        processors: list[Processor] | None = None,
+        participant: Participant | None = None,
     ) -> LLMResponseEvent:
         """
         simple_response is a standardized way to create an LLM response.
@@ -106,9 +106,9 @@ class ChatCompletionsLLM(LLM):
 
     async def create_response(
         self,
-        messages: Optional[List[Dict[str, Any]]] = None,
+        messages: list[dict[str, Any]] | None = None,
         *,
-        input: Optional[Any] = None,
+        input: Any | None = None,
         stream: bool = True,
         **kwargs: Any,
     ) -> LLMResponseEvent:
@@ -146,13 +146,13 @@ class ChatCompletionsLLM(LLM):
 
     async def _create_response_internal(
         self,
-        messages: List[Dict[str, Any]],
-        tools: Optional[List[Dict[str, Any]]] = None,
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]] | None = None,
         stream: bool = True,
         **kwargs: Any,
     ) -> LLMResponseEvent:
         """Internal method to create response with tool handling loop."""
-        request_kwargs: Dict[str, Any] = {
+        request_kwargs: dict[str, Any] = {
             "messages": messages,
             "model": kwargs.get("model", self.model),
             "stream": stream,
@@ -185,16 +185,16 @@ class ChatCompletionsLLM(LLM):
     async def _process_streaming_response(
         self,
         response: Any,
-        messages: List[Dict[str, Any]],
-        tools: Optional[List[Dict[str, Any]]],
-        kwargs: Dict[str, Any],
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]] | None,
+        kwargs: dict[str, Any],
     ) -> LLMResponseEvent:
         """Process a streaming response, handling tool calls if present."""
         llm_response: LLMResponseEvent = LLMResponseEvent(original=None, text="")
         text_chunks: list[str] = []
         total_text = ""
         self._pending_tool_calls = {}
-        accumulated_tool_calls: List[NormalizedToolCallItem] = []
+        accumulated_tool_calls: list[NormalizedToolCallItem] = []
         i = 0
 
         async for chunk in cast(AsyncStream[ChatCompletionChunk], response):
@@ -257,9 +257,9 @@ class ChatCompletionsLLM(LLM):
     async def _process_non_streaming_response(
         self,
         response: ChatCompletion,
-        messages: List[Dict[str, Any]],
-        tools: Optional[List[Dict[str, Any]]],
-        kwargs: Dict[str, Any],
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]] | None,
+        kwargs: dict[str, Any],
     ) -> LLMResponseEvent:
         """Process a non-streaming response, handling tool calls if present."""
         text = response.choices[0].message.content or ""
@@ -292,9 +292,9 @@ class ChatCompletionsLLM(LLM):
                 messages.append({"role": message.role, "content": message.content})
         return messages
 
-    def _input_to_messages(self, input_value: Any) -> List[Dict[str, Any]]:
+    def _input_to_messages(self, input_value: Any) -> list[dict[str, Any]]:
         """Convert input parameter to messages format for API compatibility."""
-        messages: List[Dict[str, Any]] = []
+        messages: list[dict[str, Any]] = []
 
         # Add instructions as system message if present
         if self._instructions:
@@ -348,9 +348,9 @@ class ChatCompletionsLLM(LLM):
             if tc_chunk.function.arguments:
                 pending["arguments_parts"].append(tc_chunk.function.arguments)
 
-    def _finalize_pending_tool_calls(self) -> List[NormalizedToolCallItem]:
+    def _finalize_pending_tool_calls(self) -> list[NormalizedToolCallItem]:
         """Convert accumulated tool call chunks into normalized tool calls."""
-        tool_calls: List[NormalizedToolCallItem] = []
+        tool_calls: list[NormalizedToolCallItem] = []
         for pending in self._pending_tool_calls.values():
             args_str = "".join(pending["arguments_parts"]).strip() or "{}"
             try:
@@ -370,8 +370,8 @@ class ChatCompletionsLLM(LLM):
         return tool_calls
 
     def _convert_tools_to_provider_format(
-        self, tools: List[ToolSchema]
-    ) -> List[Dict[str, Any]]:
+        self, tools: list[ToolSchema]
+    ) -> list[dict[str, Any]]:
         """Convert ToolSchema objects to Chat Completions API format."""
         result = []
         for t in tools or []:
@@ -397,9 +397,9 @@ class ChatCompletionsLLM(LLM):
 
     def _extract_tool_calls_from_response(
         self, response: Any
-    ) -> List[NormalizedToolCallItem]:
+    ) -> list[NormalizedToolCallItem]:
         """Extract tool calls from a non-streaming Chat Completions response."""
-        tool_calls: List[NormalizedToolCallItem] = []
+        tool_calls: list[NormalizedToolCallItem] = []
 
         if not response.choices:
             return tool_calls
@@ -427,10 +427,10 @@ class ChatCompletionsLLM(LLM):
 
     async def _handle_tool_calls(
         self,
-        tool_calls: List[NormalizedToolCallItem],
-        messages: List[Dict[str, Any]],
-        tools: Optional[List[Dict[str, Any]]],
-        kwargs: Dict[str, Any],
+        tool_calls: list[NormalizedToolCallItem],
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]] | None,
+        kwargs: dict[str, Any],
     ) -> LLMResponseEvent:
         """Execute tool calls and get follow-up response."""
         llm_response: LLMResponseEvent = LLMResponseEvent(original=None, text="")
@@ -492,7 +492,7 @@ class ChatCompletionsLLM(LLM):
             current_messages.extend(tool_results)
 
             # Make follow-up request
-            request_kwargs: Dict[str, Any] = {
+            request_kwargs: dict[str, Any] = {
                 "messages": current_messages,
                 "model": kwargs.get("model", self.model),
                 "stream": True,
@@ -516,7 +516,7 @@ class ChatCompletionsLLM(LLM):
             # Process follow-up response
             text_chunks: list[str] = []
             self._pending_tool_calls = {}
-            next_tool_calls: List[NormalizedToolCallItem] = []
+            next_tool_calls: list[NormalizedToolCallItem] = []
             i = 0
 
             async for chunk in cast(AsyncStream[ChatCompletionChunk], follow_up):

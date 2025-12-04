@@ -1,7 +1,6 @@
 import asyncio
 import logging
 from collections import deque
-from typing import Optional
 
 import numpy as np
 from getstream.video.rtc.track_util import PcmData
@@ -30,7 +29,7 @@ class AudioQueue:
         self.buffer_limit_ms = buffer_limit_ms
         self._buffer: deque[PcmData] = deque()
         self._total_samples = 0
-        self._sample_rate: Optional[int] = None
+        self._sample_rate: int | None = None
         self._not_empty = asyncio.Event()
         self._lock = asyncio.Lock()
 

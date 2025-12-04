@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import AsyncIterator, Iterator, Optional
+from collections.abc import AsyncIterator, Iterator
 
 from fish_audio_sdk import Session, TTSRequest
 from vision_agents.core import tts
@@ -21,10 +21,10 @@ class TTS(tts.TTS):
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
-        reference_id: Optional[str] = "03397b4c4be74759b72533b663fbd001",
-        base_url: Optional[str] = None,
-        client: Optional[Session] = None,
+        api_key: str | None = None,
+        reference_id: str | None = "03397b4c4be74759b72533b663fbd001",
+        base_url: str | None = None,
+        client: Session | None = None,
     ):
         """
         Initialize the Fish Audio TTS service.

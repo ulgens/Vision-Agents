@@ -2,7 +2,7 @@ import asyncio
 import logging
 import os
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 import aiortc
 import av
@@ -57,9 +57,9 @@ class CloudDetectionProcessor(
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         conf_threshold: float = 0.3,
-        detect_objects: Union[str, List[str]] = "person",
+        detect_objects: str | list[str] = "person",
         fps: int = 30,
         interval: int = 0,
         max_workers: int = 10,
@@ -73,9 +73,9 @@ class CloudDetectionProcessor(
         self._shutdown = False
 
         # Initialize state tracking attributes
-        self._last_results: Dict[str, Any] = {}
-        self._last_frame_time: Optional[float] = None
-        self._last_frame_pil: Optional[Image.Image] = None
+        self._last_results: dict[str, Any] = {}
+        self._last_frame_time: float | None = None
+        self._last_frame_pil: Image.Image | None = None
 
         # Font configuration constants for drawing efficiency
         self._font = cv2.FONT_HERSHEY_SIMPLEX
@@ -103,7 +103,7 @@ class CloudDetectionProcessor(
 
         # Video track for publishing (if used as video publisher)
         self._video_track: MoondreamVideoTrack = MoondreamVideoTrack()
-        self._video_forwarder: Optional[VideoForwarder] = None
+        self._video_forwarder: VideoForwarder | None = None
 
         # Initialize model
         self._load_model()
@@ -168,7 +168,7 @@ class CloudDetectionProcessor(
             logger.exception(f"❌ Failed to load Moondream model: {e}")
             raise
 
-    async def _run_inference(self, frame_array: np.ndarray) -> Dict[str, Any]:
+    async def _run_inference(self, frame_array: np.ndarray) -> dict[str, Any]:
         try:
             # Call SDK for each object type
             # The SDK's detect() is synchronous, so wrap in executor
@@ -182,7 +182,7 @@ class CloudDetectionProcessor(
             logger.exception(f"❌ Cloud inference failed: {e}")
             return {"detections": []}
 
-    def _run_detection_sync(self, frame_array: np.ndarray) -> List[Dict]:
+    def _run_detection_sync(self, frame_array: np.ndarray) -> list[dict]:
         image = Image.fromarray(frame_array)
 
         if self._shutdown:

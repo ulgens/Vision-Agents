@@ -9,7 +9,7 @@ automatically selects the appropriate API format based on the model:
 import json
 import logging
 import os
-from typing import Any, Dict, List, Optional, cast
+from typing import Any, cast
 
 from openai import AsyncStream
 from openai.types.chat import ChatCompletion
@@ -71,14 +71,14 @@ class OpenRouterLLM(OpenAILLM):
             **kwargs,
         )
         # For tracking streaming tool calls in Chat Completions mode
-        self._pending_tool_calls: Dict[int, Dict[str, Any]] = {}
+        self._pending_tool_calls: dict[int, dict[str, Any]] = {}
 
-    def _is_openai_model(self, model: Optional[str] = None) -> bool:
+    def _is_openai_model(self, model: str | None = None) -> bool:
         """Check if the model is an OpenAI model (uses Responses API)."""
         model = model or self.model
         return model.startswith("openai/")
 
-    def _is_auto_model(self, model: Optional[str] = None) -> bool:
+    def _is_auto_model(self, model: str | None = None) -> bool:
         """Check if the model is a meta/auto model that may not support tools."""
         model = model or self.model
         return model in ("openrouter/auto",)
@@ -130,8 +130,8 @@ class OpenRouterLLM(OpenAILLM):
 
     async def _handle_tool_calls(
         self,
-        tool_calls: List[NormalizedToolCallItem],
-        original_kwargs: Dict[str, Any],
+        tool_calls: list[NormalizedToolCallItem],
+        original_kwargs: dict[str, Any],
     ) -> LLMResponseEvent:
         """Handle tool calls for Responses API without server-side conversation.
 
@@ -205,7 +205,7 @@ class OpenRouterLLM(OpenAILLM):
             response = await self.client.responses.create(**follow_up_kwargs)
 
             # Process response
-            next_tool_calls: List[NormalizedToolCallItem] = []
+            next_tool_calls: list[NormalizedToolCallItem] = []
             if isinstance(response, OpenAIResponse):
                 llm_response = LLMResponseEvent(response, response.output_text)
                 next_tool_calls = self._extract_tool_calls_from_response(response)
@@ -286,9 +286,9 @@ class OpenRouterLLM(OpenAILLM):
 
         return response
 
-    def _build_chat_messages(self, input_value: Any) -> List[Dict[str, Any]]:
+    def _build_chat_messages(self, input_value: Any) -> list[dict[str, Any]]:
         """Convert input to Chat Completions messages format."""
-        messages: List[Dict[str, Any]] = []
+        messages: list[dict[str, Any]] = []
 
         # Add instructions as system message
         if self._instructions:
@@ -331,8 +331,8 @@ class OpenRouterLLM(OpenAILLM):
         return messages
 
     def _convert_tools_to_chat_completions_format(
-        self, tools: List[ToolSchema]
-    ) -> List[Dict[str, Any]]:
+        self, tools: list[ToolSchema]
+    ) -> list[dict[str, Any]]:
         """Convert ToolSchema to Chat Completions API format."""
         result = []
         for t in tools or []:
@@ -345,7 +345,7 @@ class OpenRouterLLM(OpenAILLM):
             params.setdefault("properties", {})
 
             # Build the function spec
-            func_spec: Dict[str, Any] = {
+            func_spec: dict[str, Any] = {
                 "name": name,
                 "description": description,
                 "parameters": params,
@@ -367,14 +367,14 @@ class OpenRouterLLM(OpenAILLM):
 
     async def _chat_completions_internal(
         self,
-        messages: List[Dict[str, Any]],
-        tools: Optional[List[Dict[str, Any]]] = None,
-        model: Optional[str] = None,
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]] | None = None,
+        model: str | None = None,
         stream: bool = True,
     ) -> LLMResponseEvent:
         """Internal Chat Completions implementation with tool handling."""
         effective_model = model or self.model
-        request_kwargs: Dict[str, Any] = {
+        request_kwargs: dict[str, Any] = {
             "messages": messages,
             "model": effective_model,
             "stream": stream,
@@ -402,9 +402,9 @@ class OpenRouterLLM(OpenAILLM):
     async def _process_chat_stream(
         self,
         response: Any,
-        messages: List[Dict[str, Any]],
-        tools: Optional[List[Dict[str, Any]]],
-        model: Optional[str],
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]] | None,
+        model: str | None,
     ) -> LLMResponseEvent:
         """Process streaming Chat Completions response.
 
@@ -416,7 +416,7 @@ class OpenRouterLLM(OpenAILLM):
         llm_response: LLMResponseEvent = LLMResponseEvent(original=None, text="")
         text_chunks: list[str] = []
         self._pending_tool_calls = {}
-        accumulated_tool_calls: List[NormalizedToolCallItem] = []
+        accumulated_tool_calls: list[NormalizedToolCallItem] = []
         has_tool_call_delta = False
         i = 0
 
@@ -476,9 +476,9 @@ class OpenRouterLLM(OpenAILLM):
     async def _process_chat_response(
         self,
         response: ChatCompletion,
-        messages: List[Dict[str, Any]],
-        tools: Optional[List[Dict[str, Any]]],
-        model: Optional[str],
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]] | None,
+        model: str | None,
     ) -> LLMResponseEvent:
         """Process non-streaming Chat Completions response."""
         text = response.choices[0].message.content or ""
@@ -520,9 +520,9 @@ class OpenRouterLLM(OpenAILLM):
             if tc_chunk.function.arguments:
                 pending["arguments_parts"].append(tc_chunk.function.arguments)
 
-    def _finalize_chat_tool_calls(self) -> List[NormalizedToolCallItem]:
+    def _finalize_chat_tool_calls(self) -> list[NormalizedToolCallItem]:
         """Convert accumulated tool call chunks to normalized format."""
-        tool_calls: List[NormalizedToolCallItem] = []
+        tool_calls: list[NormalizedToolCallItem] = []
         for pending in self._pending_tool_calls.values():
             args_str = "".join(pending["arguments_parts"]).strip() or "{}"
             try:
@@ -545,9 +545,9 @@ class OpenRouterLLM(OpenAILLM):
 
     def _extract_chat_tool_calls(
         self, response: ChatCompletion
-    ) -> List[NormalizedToolCallItem]:
+    ) -> list[NormalizedToolCallItem]:
         """Extract tool calls from non-streaming Chat Completions response."""
-        tool_calls: List[NormalizedToolCallItem] = []
+        tool_calls: list[NormalizedToolCallItem] = []
 
         if not response.choices:
             return tool_calls
@@ -578,10 +578,10 @@ class OpenRouterLLM(OpenAILLM):
 
     async def _handle_chat_tool_calls(
         self,
-        tool_calls: List[NormalizedToolCallItem],
-        messages: List[Dict[str, Any]],
-        tools: Optional[List[Dict[str, Any]]],
-        model: Optional[str],
+        tool_calls: list[NormalizedToolCallItem],
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]] | None,
+        model: str | None,
     ) -> LLMResponseEvent:
         """Execute tool calls and get follow-up response (Chat Completions).
 
@@ -656,7 +656,7 @@ class OpenRouterLLM(OpenAILLM):
 
             # Make follow-up request
             effective_model = model or self.model
-            request_kwargs: Dict[str, Any] = {
+            request_kwargs: dict[str, Any] = {
                 "messages": current_messages,
                 "model": effective_model,
                 "stream": True,
@@ -671,7 +671,7 @@ class OpenRouterLLM(OpenAILLM):
             # Process follow-up streaming response
             text_chunks: list[str] = []
             self._pending_tool_calls = {}
-            next_tool_calls: List[NormalizedToolCallItem] = []
+            next_tool_calls: list[NormalizedToolCallItem] = []
             has_tool_call_delta = False
             seq = 0
 

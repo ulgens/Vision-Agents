@@ -1,4 +1,3 @@
-from typing import Optional
 from abc import ABC, abstractmethod
 from enum import Enum
 import uuid
@@ -21,7 +20,7 @@ class TurnDetector(ABC):
     """Base implementation for turn detection with common functionality."""
 
     def __init__(
-        self, confidence_threshold: float = 0.5, provider_name: Optional[str] = None
+        self, confidence_threshold: float = 0.5, provider_name: str | None = None
     ) -> None:
         self._confidence_threshold = confidence_threshold
         self.is_active = False
@@ -48,9 +47,9 @@ class TurnDetector(ABC):
     def _emit_end_turn_event(
         self,
         participant: Participant,
-        confidence: Optional[float] = None,
-        trailing_silence_ms: Optional[float] = None,
-        duration_ms: Optional[float] = None,
+        confidence: float | None = None,
+        trailing_silence_ms: float | None = None,
+        duration_ms: float | None = None,
         eager_end_of_turn: bool = False,
     ) -> None:
         if confidence is None:
@@ -71,7 +70,7 @@ class TurnDetector(ABC):
         self,
         audio_data: PcmData,
         participant: Participant,
-        conversation: Optional[Conversation],
+        conversation: Conversation | None,
     ) -> None:
         """Process the audio and trigger turn start or turn end events
 

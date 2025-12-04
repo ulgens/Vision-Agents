@@ -1,7 +1,7 @@
 import asyncio
 import os
 import logging
-from typing import Optional, List, TYPE_CHECKING, Any, Dict, cast
+from typing import TYPE_CHECKING, Any, cast
 import json
 import boto3
 from botocore.exceptions import ClientError
@@ -44,9 +44,9 @@ class BedrockLLM(LLM):
         self,
         model: str,
         region_name: str = "us-east-1",
-        aws_access_key_id: Optional[str] = None,
-        aws_secret_access_key: Optional[str] = None,
-        aws_session_token: Optional[str] = None,
+        aws_access_key_id: str | None = None,
+        aws_secret_access_key: str | None = None,
+        aws_session_token: str | None = None,
     ):
         """
         Initialize the BedrockLLM class.
@@ -61,7 +61,7 @@ class BedrockLLM(LLM):
         super().__init__()
         self.events.register_events_from_module(events)
         self.model = model
-        self._pending_tool_uses_by_index: Dict[int, Dict[str, Any]] = {}
+        self._pending_tool_uses_by_index: dict[int, dict[str, Any]] = {}
 
         # Initialize boto3 bedrock-runtime client
         session_kwargs = {"region_name": region_name}
@@ -93,8 +93,8 @@ class BedrockLLM(LLM):
     async def simple_response(
         self,
         text: str,
-        processors: Optional[List[Processor]] = None,
-        participant: Optional[Participant] = None,
+        processors: list[Processor] | None = None,
+        participant: Participant | None = None,
     ):
         """
         Simple response is a standardized way to create a response.
@@ -173,7 +173,7 @@ class BedrockLLM(LLM):
                 while current_calls and rounds < MAX_ROUNDS:
                     # Execute calls concurrently with dedup
                     triples, seen = await self._dedup_and_execute(
-                        cast(List[NormalizedToolCallItem], current_calls),
+                        cast(list[NormalizedToolCallItem], current_calls),
                         seen=seen,
                         max_concurrency=8,
                         timeout_s=30,
@@ -395,8 +395,8 @@ class BedrockLLM(LLM):
                 llm_response = LLMResponseEvent(None, "No stream in response")
                 return llm_response
 
-            text_parts: List[str] = []
-            accumulated_calls: List[NormalizedToolCallItem] = []
+            text_parts: list[str] = []
+            accumulated_calls: list[NormalizedToolCallItem] = []
             last_event = None
 
             for event in events:
@@ -428,7 +428,7 @@ class BedrockLLM(LLM):
 
             while accumulated_calls and rounds < MAX_ROUNDS:
                 triples, seen = await self._dedup_and_execute(
-                    cast(List[NormalizedToolCallItem], accumulated_calls),
+                    cast(list[NormalizedToolCallItem], accumulated_calls),
                     seen=seen,
                     max_concurrency=8,
                     timeout_s=30,
@@ -475,7 +475,7 @@ class BedrockLLM(LLM):
                 follow_up_response = client.converse_stream(**follow_up_kwargs)
 
                 accumulated_calls = []
-                follow_up_text_parts: List[str] = []
+                follow_up_text_parts: list[str] = []
                 follow_up_stream = follow_up_response.get("stream")
                 for event in follow_up_stream:
                     last_event = event
@@ -528,7 +528,7 @@ class BedrockLLM(LLM):
                     return events
 
                 final_events = await asyncio.to_thread(_consume_final_stream)
-                final_text_parts: List[str] = []
+                final_text_parts: list[str] = []
                 for event in final_events:
                     last_event = event
                     self._process_stream_event(
@@ -553,9 +553,9 @@ class BedrockLLM(LLM):
 
     def _process_stream_event(
         self,
-        event: Dict[str, Any],
-        text_parts: List[str],
-        accumulated_calls: List[NormalizedToolCallItem],
+        event: dict[str, Any],
+        text_parts: list[str],
+        accumulated_calls: list[NormalizedToolCallItem],
     ):
         """Process a streaming event from AWS."""
         # Forward the native event
@@ -616,7 +616,7 @@ class BedrockLLM(LLM):
                 }
                 accumulated_calls.append(tool_call_item)
 
-    def _extract_text_from_response(self, response: Dict[str, Any]) -> str:
+    def _extract_text_from_response(self, response: dict[str, Any]) -> str:
         """Extract text content from AWS response."""
         output = response.get("output", {})
         message = output.get("message", {})
@@ -630,10 +630,10 @@ class BedrockLLM(LLM):
         return "".join(text_parts)
 
     def _extract_tool_calls_from_response(
-        self, response: Dict[str, Any]
-    ) -> List[NormalizedToolCallItem]:
+        self, response: dict[str, Any]
+    ) -> list[NormalizedToolCallItem]:
         """Extract tool calls from AWS response."""
-        tool_calls: List[NormalizedToolCallItem] = []
+        tool_calls: list[NormalizedToolCallItem] = []
 
         output = response.get("output", {})
         if not output:
@@ -661,8 +661,8 @@ class BedrockLLM(LLM):
         return tool_calls
 
     def _convert_tools_to_provider_format(
-        self, tools: List[ToolSchema]
-    ) -> List[Dict[str, Any]]:
+        self, tools: list[ToolSchema]
+    ) -> list[dict[str, Any]]:
         """
         Convert ToolSchema objects to AWS Bedrock format.
 
@@ -712,17 +712,17 @@ class BedrockLLM(LLM):
         return aws_tools
 
     @staticmethod
-    def _normalize_message(aws_messages: Any) -> List["Message"]:
+    def _normalize_message(aws_messages: Any) -> list["Message"]:
         """Normalize AWS messages to internal Message format."""
         from vision_agents.core.agents.conversation import Message
 
         if isinstance(aws_messages, str):
             aws_messages = [{"content": [{"text": aws_messages}], "role": "user"}]
 
-        if not isinstance(aws_messages, (List, tuple)):
+        if not isinstance(aws_messages, (list, tuple)):
             aws_messages = [aws_messages]
 
-        messages: List[Message] = []
+        messages: list[Message] = []
         for m in aws_messages:
             if isinstance(m, dict):
                 content_items = m.get("content", [])

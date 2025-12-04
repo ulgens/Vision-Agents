@@ -2,7 +2,6 @@ import asyncio
 import datetime
 import tempfile
 from dataclasses import dataclass, asdict
-from typing import Optional
 
 import aiortc.mediastreams
 
@@ -39,7 +38,7 @@ class TrackInfo:
     type: int
     processor: str
     priority: int  # higher goes first
-    participant: Optional[Participant]
+    participant: Participant | None
     track: aiortc.mediastreams.VideoStreamTrack
     forwarder: VideoForwarder
 
@@ -47,10 +46,10 @@ class TrackInfo:
 @dataclass
 class LLMTurn:
     input: str
-    participant: Optional[Participant]
+    participant: Participant | None
     started_at: datetime.datetime
-    finished_at: Optional[datetime.datetime] = None
-    canceled_at: Optional[datetime.datetime] = None
-    response: Optional[LLMResponseCompletedEvent] = None
-    task: Optional[asyncio.Task] = None
+    finished_at: datetime.datetime | None = None
+    canceled_at: datetime.datetime | None = None
+    response: LLMResponseCompletedEvent | None = None
+    task: asyncio.Task | None = None
     turn_finished: bool = False

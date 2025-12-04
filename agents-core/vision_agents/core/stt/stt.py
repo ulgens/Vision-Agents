@@ -1,7 +1,6 @@
 import abc
 import logging
 import uuid
-from typing import Optional
 from getstream.video.rtc.track_util import PcmData
 
 from ..edge.types import Participant
@@ -31,7 +30,7 @@ class STT(abc.ABC):
 
     def __init__(
         self,
-        provider_name: Optional[str] = None,
+        provider_name: str | None = None,
     ):
         self.session_id = str(uuid.uuid4())
         self.provider_name = provider_name or self.__class__.__name__
@@ -79,7 +78,7 @@ class STT(abc.ABC):
         self,
         participant: Participant,
         eager_end_of_turn: bool = False,
-        confidence: Optional[float] = None,
+        confidence: float | None = None,
     ):
         if confidence is None:
             confidence = 0.5
@@ -96,7 +95,7 @@ class STT(abc.ABC):
     def _emit_turn_started_event(
         self,
         participant: Participant,
-        confidence: Optional[float] = None,
+        confidence: float | None = None,
     ):
         if confidence is None:
             confidence = 0.5
@@ -136,7 +135,7 @@ class STT(abc.ABC):
         self,
         error: Exception,
         context: str = "",
-        participant: Optional[Participant] = None,
+        participant: Participant | None = None,
     ):
         """
         Emit an error event. Note this should only be emitted for temporary errors.
@@ -158,7 +157,7 @@ class STT(abc.ABC):
     async def process_audio(
         self,
         pcm_data: PcmData,
-        participant: Optional[Participant] = None,
+        participant: Participant | None = None,
     ):
         pass
 

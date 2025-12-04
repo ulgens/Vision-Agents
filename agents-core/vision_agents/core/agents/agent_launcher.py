@@ -2,7 +2,8 @@
 
 import asyncio
 import logging
-from typing import TYPE_CHECKING, Awaitable, Callable, Optional, Union, cast
+from typing import TYPE_CHECKING, Optional, Union, cast
+from collections.abc import Awaitable, Callable
 
 if TYPE_CHECKING:
     from .agents import Agent
@@ -29,7 +30,7 @@ class AgentLauncher:
     def __init__(
         self,
         create_agent: Callable[..., Union["Agent", Awaitable["Agent"]]],
-        join_call: Optional[Callable[..., Union[None, Awaitable[None]]]] = None,
+        join_call: Callable[..., None | Awaitable[None]] | None = None,
     ):
         """
         Initialize the agent launcher.

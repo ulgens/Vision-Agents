@@ -6,14 +6,10 @@ import json
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
-    Dict,
     Generic,
-    List,
-    Optional,
-    Tuple,
     TypeVar,
 )
+from collections.abc import Callable
 
 import aiortc
 from vision_agents.core.instructions import Instructions
@@ -37,20 +33,20 @@ T = TypeVar("T")
 
 
 class LLMResponseEvent(Generic[T]):
-    def __init__(self, original: T, text: str, exception: Optional[Exception] = None):
+    def __init__(self, original: T, text: str, exception: Exception | None = None):
         self.original = original
         self.text = text
         self.exception = exception
 
 
-BeforeCb = Callable[[List[Any]], None]
+BeforeCb = Callable[[list[Any]], None]
 AfterCb = Callable[[LLMResponseEvent], None]
 
 
 class LLM(abc.ABC):
     before_response_listener: BeforeCb
     after_response_listener: AfterCb
-    agent: Optional["Agent"]
+    agent: Agent | None
     function_registry: FunctionRegistry
 
     def __init__(self):
@@ -61,7 +57,7 @@ class LLM(abc.ABC):
         self.function_registry = FunctionRegistry()
         # LLM instructions. Provided by the Agent via `set_instructions` method
         self._instructions: str = ""
-        self._conversation: Optional[Conversation] = None
+        self._conversation: Conversation | None = None
 
     async def warmup(self) -> None:
         """
@@ -76,12 +72,12 @@ class LLM(abc.ABC):
     async def simple_response(
         self,
         text: str,
-        processors: Optional[List[Processor]] = None,
-        participant: Optional[Participant] = None,
+        processors: list[Processor] | None = None,
+        participant: Participant | None = None,
     ) -> LLMResponseEvent[Any]:
         raise NotImplementedError
 
-    def _get_tools_for_provider(self) -> List[Dict[str, Any]]:
+    def _get_tools_for_provider(self) -> list[dict[str, Any]]:
         """
         Get tools in provider-specific format.
         This method should be overridden by each LLM implementation.
@@ -93,8 +89,8 @@ class LLM(abc.ABC):
         return self._convert_tools_to_provider_format(tools)
 
     def _convert_tools_to_provider_format(
-        self, tools: List[ToolSchema]
-    ) -> List[Dict[str, Any]]:
+        self, tools: list[ToolSchema]
+    ) -> list[dict[str, Any]]:
         """
         Convert ToolSchema objects to provider-specific format.
         This method should be overridden by each LLM implementation.
@@ -110,7 +106,7 @@ class LLM(abc.ABC):
 
     def _extract_tool_calls_from_response(
         self, response: Any
-    ) -> List[NormalizedToolCallItem]:
+    ) -> list[NormalizedToolCallItem]:
         """
         Extract tool calls from provider-specific response.
         This method should be overridden by each LLM implementation.
@@ -126,7 +122,7 @@ class LLM(abc.ABC):
 
     def _extract_tool_calls_from_stream_chunk(
         self, chunk: Any
-    ) -> List[NormalizedToolCallItem]:
+    ) -> list[NormalizedToolCallItem]:
         """
         Extract tool calls from a streaming chunk.
         This method should be overridden by each LLM implementation.
@@ -141,8 +137,8 @@ class LLM(abc.ABC):
         return []
 
     def _create_tool_result_message(
-        self, tool_calls: List[NormalizedToolCallItem], results: List[Any]
-    ) -> List[Dict[str, Any]]:
+        self, tool_calls: list[NormalizedToolCallItem], results: list[Any]
+    ) -> list[dict[str, Any]]:
         """
         Create tool result messages for the provider.
         This method should be overridden by each LLM implementation.
@@ -193,7 +189,7 @@ class LLM(abc.ABC):
             )
 
     def register_function(
-        self, name: Optional[str] = None, description: Optional[str] = None
+        self, name: str | None = None, description: str | None = None
     ) -> Callable:
         """
         Decorator to register a function with the LLM's function registry.
@@ -207,11 +203,11 @@ class LLM(abc.ABC):
         """
         return self.function_registry.register(name, description)
 
-    def get_available_functions(self) -> List[ToolSchema]:
+    def get_available_functions(self) -> list[ToolSchema]:
         """Get a list of available function schemas."""
         return self.function_registry.get_tool_schemas()
 
-    def call_function(self, name: str, arguments: Dict[str, Any]) -> Any:
+    def call_function(self, name: str, arguments: dict[str, Any]) -> Any:
         """
         Call a registered function with the given arguments.
 
@@ -224,7 +220,7 @@ class LLM(abc.ABC):
         """
         return self.function_registry.call_function(name, arguments)
 
-    def _tc_key(self, tc: NormalizedToolCallItem) -> Tuple[Optional[str], str, str]:
+    def _tc_key(self, tc: NormalizedToolCallItem) -> tuple[str | None, str, str]:
         """Generate a unique key for tool call deduplication.
 
         Args:
@@ -252,7 +248,7 @@ class LLM(abc.ABC):
             return await x
         return x
 
-    async def _run_one_tool(self, tc: Dict[str, Any], timeout_s: float):
+    async def _run_one_tool(self, tc: dict[str, Any], timeout_s: float):
         """Run a single tool call with timeout.
 
         Args:
@@ -328,7 +324,7 @@ class LLM(abc.ABC):
 
     async def _execute_tools(
         self,
-        calls: List[NormalizedToolCallItem],
+        calls: list[NormalizedToolCallItem],
         *,
         max_concurrency: int = 8,
         timeout_s: float = 30,
@@ -353,11 +349,11 @@ class LLM(abc.ABC):
 
     async def _dedup_and_execute(
         self,
-        calls: List[NormalizedToolCallItem],
+        calls: list[NormalizedToolCallItem],
         *,
         max_concurrency: int = 8,
         timeout_s: float = 30,
-        seen: Optional[set] = None,
+        seen: set | None = None,
     ):
         """De-duplicate (by id/name/args) then execute concurrently.
 
@@ -371,7 +367,7 @@ class LLM(abc.ABC):
             Tuple of (triples, updated_seen_set)
         """
         seen = seen or set()
-        to_run: List[NormalizedToolCallItem] = []
+        to_run: list[NormalizedToolCallItem] = []
         for tc in calls:
             key = self._tc_key(tc)
             if key in seen:
@@ -409,7 +405,7 @@ class AudioLLM(LLM, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     async def simple_audio_response(
-        self, pcm: PcmData, participant: Optional[Participant] = None
+        self, pcm: PcmData, participant: Participant | None = None
     ):
         """
         Implement this method to forward PCM audio frames to the LLM.
@@ -434,7 +430,7 @@ class VideoLLM(LLM, metaclass=abc.ABCMeta):
     async def watch_video_track(
         self,
         track: aiortc.mediastreams.MediaStreamTrack,
-        shared_forwarder: Optional[VideoForwarder] = None,
+        shared_forwarder: VideoForwarder | None = None,
     ) -> None:
         """
         Implement this method to watch and forward video tracks.

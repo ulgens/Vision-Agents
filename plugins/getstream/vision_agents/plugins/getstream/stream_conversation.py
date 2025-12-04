@@ -1,5 +1,4 @@
 import logging
-from typing import List, Dict
 
 from getstream.models import MessageRequest
 from getstream.chat.async_channel import Channel
@@ -18,14 +17,14 @@ class StreamConversation(Conversation):
     """Persists the message history to a Stream channel with automatic chunking."""
 
     # Maps internal message IDs to first Stream message ID (for backward compatibility)
-    internal_ids_to_stream_ids: Dict[str, str]
+    internal_ids_to_stream_ids: dict[str, str]
     channel: Channel
     chunk_size: int
 
     def __init__(
         self,
         instructions: str,
-        messages: List[Message],
+        messages: list[Message],
         channel: Channel,
         chunk_size: int = 1000,
     ):
@@ -64,7 +63,7 @@ class StreamConversation(Conversation):
             await self._update_chunks(message, state, chunks, completed)
 
     async def _create_chunks(
-        self, message: Message, state: MessageState, chunks: List[str], completed: bool
+        self, message: Message, state: MessageState, chunks: list[str], completed: bool
     ):
         """Create all chunks for a new message."""
         for i, chunk_text in enumerate(chunks):
@@ -109,7 +108,7 @@ class StreamConversation(Conversation):
         self,
         message: Message,
         state: MessageState,
-        new_chunks: List[str],
+        new_chunks: list[str],
         completed: bool,
     ):
         """Update existing chunks, creating or deleting as needed."""
@@ -203,7 +202,7 @@ class StreamConversation(Conversation):
             # Remove from tracking
             state.backend_message_ids = state.backend_message_ids[:new_chunk_count]
 
-    def _smart_chunk(self, text: str, max_size: int) -> List[str]:
+    def _smart_chunk(self, text: str, max_size: int) -> list[str]:
         """Chunk text intelligently, respecting markdown structures.
 
         Best-effort approach to avoid breaking:
@@ -300,7 +299,7 @@ class StreamConversation(Conversation):
 
         return chunks if chunks else [text]  # Fallback to original text
 
-    def _split_large_block(self, block: str, max_size: int) -> List[str]:
+    def _split_large_block(self, block: str, max_size: int) -> list[str]:
         """Split a large block (e.g., huge code block) at newline boundaries.
 
         Args:
@@ -331,7 +330,7 @@ class StreamConversation(Conversation):
 
         return chunks
 
-    def _force_split(self, text: str, max_size: int) -> List[str]:
+    def _force_split(self, text: str, max_size: int) -> list[str]:
         """Force split text at max_size boundaries (no newlines available).
 
         Used for text without any newlines (e.g., long URLs, continuous text).

@@ -8,7 +8,7 @@ available to all tests in the project, including plugin tests.
 import asyncio
 import logging
 import os
-from typing import Iterator
+from collections.abc import Iterator
 
 import numpy as np
 import pytest

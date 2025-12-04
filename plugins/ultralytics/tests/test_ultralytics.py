@@ -3,7 +3,7 @@ Tests for the ultralytics plugin.
 """
 
 from pathlib import Path
-from typing import Iterator
+from collections.abc import Iterator
 
 import numpy as np
 import pytest

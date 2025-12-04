@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from dataclasses_json import DataClassJsonMixin
 from google.protobuf.json_format import MessageToDict
@@ -16,7 +16,7 @@ from vision_agents.core.events.base import BaseEvent
 # Available enums: TrackType, ConnectionQuality, ErrorCode, PeerType, etc.
 
 
-def _to_dict(message) -> Dict[str, Any]:
+def _to_dict(message) -> dict[str, Any]:
     try:
         return MessageToDict(message, preserving_proto_field_name=True)
     except Exception:
@@ -33,11 +33,11 @@ def _to_dict(message) -> Dict[str, Any]:
 class Browser(DataClassJsonMixin):
     """Wrapper for stream.video.sfu.models.Browser."""
 
-    name: Optional[str] = None
-    version: Optional[str] = None
+    name: str | None = None
+    version: str | None = None
 
     @classmethod
-    def from_proto(cls, proto_obj) -> "Browser":
+    def from_proto(cls, proto_obj) -> Browser:
         """Create from protobuf Browser."""
         if proto_obj is None:
             return cls()
@@ -48,12 +48,12 @@ class Browser(DataClassJsonMixin):
 class CallGrants(DataClassJsonMixin):
     """Wrapper for stream.video.sfu.models.CallGrants."""
 
-    can_publish_audio: Optional[bool] = None
-    can_publish_video: Optional[bool] = None
-    can_screenshare: Optional[bool] = None
+    can_publish_audio: bool | None = None
+    can_publish_video: bool | None = None
+    can_screenshare: bool | None = None
 
     @classmethod
-    def from_proto(cls, proto_obj) -> "CallGrants":
+    def from_proto(cls, proto_obj) -> CallGrants:
         """Create from protobuf CallGrants."""
         if proto_obj is None:
             return cls()
@@ -68,13 +68,13 @@ class CallGrants(DataClassJsonMixin):
 class CallState(DataClassJsonMixin):
     """Wrapper for stream.video.sfu.models.CallState."""
 
-    participants: Optional[List[Participant]] = None
-    started_at: Optional[Any] = None
-    participant_count: Optional[ParticipantCount] = None
-    pins: Optional[List[Pin]] = None
+    participants: list[Participant] | None = None
+    started_at: Any | None = None
+    participant_count: ParticipantCount | None = None
+    pins: list[Pin] | None = None
 
     @classmethod
-    def from_proto(cls, proto_obj) -> "CallState":
+    def from_proto(cls, proto_obj) -> CallState:
         """Create from protobuf CallState."""
         if proto_obj is None:
             return cls()
@@ -96,13 +96,13 @@ class CallState(DataClassJsonMixin):
 class ClientDetails(DataClassJsonMixin):
     """Wrapper for stream.video.sfu.models.ClientDetails."""
 
-    sdk: Optional[Sdk] = None
-    os: Optional[OS] = None
-    browser: Optional[Browser] = None
-    device: Optional[Device] = None
+    sdk: Sdk | None = None
+    os: OS | None = None
+    browser: Browser | None = None
+    device: Device | None = None
 
     @classmethod
-    def from_proto(cls, proto_obj) -> "ClientDetails":
+    def from_proto(cls, proto_obj) -> ClientDetails:
         """Create from protobuf ClientDetails."""
         if proto_obj is None:
             return cls()
@@ -122,14 +122,14 @@ class ClientDetails(DataClassJsonMixin):
 class Codec(DataClassJsonMixin):
     """Wrapper for stream.video.sfu.models.Codec."""
 
-    payload_type: Optional[int] = None
-    name: Optional[str] = None
-    clock_rate: Optional[int] = None
-    encoding_parameters: Optional[str] = None
-    fmtp: Optional[str] = None
+    payload_type: int | None = None
+    name: str | None = None
+    clock_rate: int | None = None
+    encoding_parameters: str | None = None
+    fmtp: str | None = None
 
     @classmethod
-    def from_proto(cls, proto_obj) -> "Codec":
+    def from_proto(cls, proto_obj) -> Codec:
         """Create from protobuf Codec."""
         if proto_obj is None:
             return cls()
@@ -146,11 +146,11 @@ class Codec(DataClassJsonMixin):
 class Device(DataClassJsonMixin):
     """Wrapper for stream.video.sfu.models.Device."""
 
-    name: Optional[str] = None
-    version: Optional[str] = None
+    name: str | None = None
+    version: str | None = None
 
     @classmethod
-    def from_proto(cls, proto_obj) -> "Device":
+    def from_proto(cls, proto_obj) -> Device:
         """Create from protobuf Device."""
         if proto_obj is None:
             return cls()
@@ -165,12 +165,12 @@ class Error(DataClassJsonMixin):
         - code: ErrorCode
     """
 
-    code: Optional[int] = None
-    message: Optional[str] = None
-    should_retry: Optional[bool] = None
+    code: int | None = None
+    message: str | None = None
+    should_retry: bool | None = None
 
     @classmethod
-    def from_proto(cls, proto_obj) -> "Error":
+    def from_proto(cls, proto_obj) -> Error:
         """Create from protobuf Error."""
         if proto_obj is None:
             return cls()
@@ -189,12 +189,12 @@ class ICETrickle(DataClassJsonMixin):
         - peer_type: PeerType
     """
 
-    peer_type: Optional[int] = None
-    ice_candidate: Optional[str] = None
-    session_id: Optional[str] = None
+    peer_type: int | None = None
+    ice_candidate: str | None = None
+    session_id: str | None = None
 
     @classmethod
-    def from_proto(cls, proto_obj) -> "ICETrickle":
+    def from_proto(cls, proto_obj) -> ICETrickle:
         """Create from protobuf ICETrickle."""
         if proto_obj is None:
             return cls()
@@ -209,12 +209,12 @@ class ICETrickle(DataClassJsonMixin):
 class OS(DataClassJsonMixin):
     """Wrapper for stream.video.sfu.models.OS."""
 
-    name: Optional[str] = None
-    version: Optional[str] = None
-    architecture: Optional[str] = None
+    name: str | None = None
+    version: str | None = None
+    architecture: str | None = None
 
     @classmethod
-    def from_proto(cls, proto_obj) -> "OS":
+    def from_proto(cls, proto_obj) -> OS:
         """Create from protobuf OS."""
         if proto_obj is None:
             return cls()
@@ -234,22 +234,22 @@ class Participant(DataClassJsonMixin):
         - connection_quality: ConnectionQuality
     """
 
-    user_id: Optional[str] = None
-    session_id: Optional[str] = None
-    published_tracks: Optional[List[int]] = None
-    joined_at: Optional[Any] = None
-    track_lookup_prefix: Optional[str] = None
-    connection_quality: Optional[int] = None
-    is_speaking: Optional[bool] = None
-    is_dominant_speaker: Optional[bool] = None
-    audio_level: Optional[float] = None
-    name: Optional[str] = None
-    image: Optional[str] = None
-    custom: Optional[Any] = None
-    roles: Optional[List[str]] = None
+    user_id: str | None = None
+    session_id: str | None = None
+    published_tracks: list[int] | None = None
+    joined_at: Any | None = None
+    track_lookup_prefix: str | None = None
+    connection_quality: int | None = None
+    is_speaking: bool | None = None
+    is_dominant_speaker: bool | None = None
+    audio_level: float | None = None
+    name: str | None = None
+    image: str | None = None
+    custom: Any | None = None
+    roles: list[str] | None = None
 
     @classmethod
-    def from_proto(cls, proto_obj) -> "Participant":
+    def from_proto(cls, proto_obj) -> Participant:
         """Create from protobuf Participant."""
         if proto_obj is None:
             return cls()
@@ -274,11 +274,11 @@ class Participant(DataClassJsonMixin):
 class ParticipantCount(DataClassJsonMixin):
     """Wrapper for stream.video.sfu.models.ParticipantCount."""
 
-    total: Optional[int] = None
-    anonymous: Optional[int] = None
+    total: int | None = None
+    anonymous: int | None = None
 
     @classmethod
-    def from_proto(cls, proto_obj) -> "ParticipantCount":
+    def from_proto(cls, proto_obj) -> ParticipantCount:
         """Create from protobuf ParticipantCount."""
         if proto_obj is None:
             return cls()
@@ -289,11 +289,11 @@ class ParticipantCount(DataClassJsonMixin):
 class Pin(DataClassJsonMixin):
     """Wrapper for stream.video.sfu.models.Pin."""
 
-    user_id: Optional[str] = None
-    session_id: Optional[str] = None
+    user_id: str | None = None
+    session_id: str | None = None
 
     @classmethod
-    def from_proto(cls, proto_obj) -> "Pin":
+    def from_proto(cls, proto_obj) -> Pin:
         """Create from protobuf Pin."""
         if proto_obj is None:
             return cls()
@@ -308,18 +308,18 @@ class PublishOption(DataClassJsonMixin):
         - track_type: TrackType
     """
 
-    track_type: Optional[int] = None
-    codec: Optional[Codec] = None
-    bitrate: Optional[int] = None
-    fps: Optional[int] = None
-    max_spatial_layers: Optional[int] = None
-    max_temporal_layers: Optional[int] = None
-    video_dimension: Optional[VideoDimension] = None
-    id: Optional[int] = None
-    use_single_layer: Optional[bool] = None
+    track_type: int | None = None
+    codec: Codec | None = None
+    bitrate: int | None = None
+    fps: int | None = None
+    max_spatial_layers: int | None = None
+    max_temporal_layers: int | None = None
+    video_dimension: VideoDimension | None = None
+    id: int | None = None
+    use_single_layer: bool | None = None
 
     @classmethod
-    def from_proto(cls, proto_obj) -> "PublishOption":
+    def from_proto(cls, proto_obj) -> PublishOption:
         """Create from protobuf PublishOption."""
         if proto_obj is None:
             return cls()
@@ -348,13 +348,13 @@ class Sdk(DataClassJsonMixin):
         - type: SdkType
     """
 
-    type: Optional[int] = None
-    major: Optional[str] = None
-    minor: Optional[str] = None
-    patch: Optional[str] = None
+    type: int | None = None
+    major: str | None = None
+    minor: str | None = None
+    patch: str | None = None
 
     @classmethod
-    def from_proto(cls, proto_obj) -> "Sdk":
+    def from_proto(cls, proto_obj) -> Sdk:
         """Create from protobuf Sdk."""
         if proto_obj is None:
             return cls()
@@ -374,11 +374,11 @@ class SubscribeOption(DataClassJsonMixin):
         - track_type: TrackType
     """
 
-    track_type: Optional[int] = None
-    codecs: Optional[List[Codec]] = None
+    track_type: int | None = None
+    codecs: list[Codec] | None = None
 
     @classmethod
-    def from_proto(cls, proto_obj) -> "SubscribeOption":
+    def from_proto(cls, proto_obj) -> SubscribeOption:
         """Create from protobuf SubscribeOption."""
         if proto_obj is None:
             return cls()
@@ -396,19 +396,19 @@ class TrackInfo(DataClassJsonMixin):
         - track_type: TrackType
     """
 
-    track_id: Optional[str] = None
-    track_type: Optional[int] = None
-    layers: Optional[List[VideoLayer]] = None
-    mid: Optional[str] = None
-    dtx: Optional[bool] = None
-    stereo: Optional[bool] = None
-    red: Optional[bool] = None
-    muted: Optional[bool] = None
-    codec: Optional[Codec] = None
-    publish_option_id: Optional[int] = None
+    track_id: str | None = None
+    track_type: int | None = None
+    layers: list[VideoLayer] | None = None
+    mid: str | None = None
+    dtx: bool | None = None
+    stereo: bool | None = None
+    red: bool | None = None
+    muted: bool | None = None
+    codec: Codec | None = None
+    publish_option_id: int | None = None
 
     @classmethod
-    def from_proto(cls, proto_obj) -> "TrackInfo":
+    def from_proto(cls, proto_obj) -> TrackInfo:
         """Create from protobuf TrackInfo."""
         if proto_obj is None:
             return cls()
@@ -432,11 +432,11 @@ class TrackInfo(DataClassJsonMixin):
 class VideoDimension(DataClassJsonMixin):
     """Wrapper for stream.video.sfu.models.VideoDimension."""
 
-    width: Optional[int] = None
-    height: Optional[int] = None
+    width: int | None = None
+    height: int | None = None
 
     @classmethod
-    def from_proto(cls, proto_obj) -> "VideoDimension":
+    def from_proto(cls, proto_obj) -> VideoDimension:
         """Create from protobuf VideoDimension."""
         if proto_obj is None:
             return cls()
@@ -451,14 +451,14 @@ class VideoLayer(DataClassJsonMixin):
         - quality: VideoQuality
     """
 
-    rid: Optional[str] = None
-    video_dimension: Optional[VideoDimension] = None
-    bitrate: Optional[int] = None
-    fps: Optional[int] = None
-    quality: Optional[int] = None
+    rid: str | None = None
+    video_dimension: VideoDimension | None = None
+    bitrate: int | None = None
+    fps: int | None = None
+    quality: int | None = None
 
     @classmethod
-    def from_proto(cls, proto_obj) -> "VideoLayer":
+    def from_proto(cls, proto_obj) -> VideoLayer:
         """Create from protobuf VideoLayer."""
         if proto_obj is None:
             return cls()
@@ -483,24 +483,24 @@ class AudioLevelEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.AudioLevel."""
 
     type: str = field(default="stream.video.sfu.event.AudioLevel", init=False)
-    payload: Optional[events_pb2.AudioLevel] = field(default=None, repr=False)
+    payload: events_pb2.AudioLevel | None = field(default=None, repr=False)
 
     @property
-    def user_id(self) -> Optional[str]:  # type: ignore[override]
+    def user_id(self) -> str | None:  # type: ignore[override]
         """Access user_id field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "user_id", None)
 
     @property
-    def level(self) -> Optional[float]:
+    def level(self) -> float | None:
         """Access level field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "level", None)
 
     @property
-    def is_speaking(self) -> Optional[bool]:
+    def is_speaking(self) -> bool | None:
         """Access is_speaking field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -511,7 +511,7 @@ class AudioLevelEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -531,10 +531,10 @@ class AudioLevelChangedEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.AudioLevelChanged."""
 
     type: str = field(default="stream.video.sfu.event.AudioLevelChanged", init=False)
-    payload: Optional[events_pb2.AudioLevelChanged] = field(default=None, repr=False)
+    payload: events_pb2.AudioLevelChanged | None = field(default=None, repr=False)
 
     @property
-    def audio_levels(self) -> Optional[List[Any]]:
+    def audio_levels(self) -> list[Any] | None:
         """Access audio_levels field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -545,7 +545,7 @@ class AudioLevelChangedEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -565,10 +565,10 @@ class AudioSenderEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.AudioSender."""
 
     type: str = field(default="stream.video.sfu.event.AudioSender", init=False)
-    payload: Optional[events_pb2.AudioSender] = field(default=None, repr=False)
+    payload: events_pb2.AudioSender | None = field(default=None, repr=False)
 
     @property
-    def codec(self) -> Optional[Codec]:
+    def codec(self) -> Codec | None:
         """Access codec field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -576,14 +576,14 @@ class AudioSenderEvent(BaseEvent):
         return Codec.from_proto(proto_val) if proto_val is not None else None
 
     @property
-    def track_type(self) -> Optional[int]:
+    def track_type(self) -> int | None:
         """Access track_type field from the protobuf payload. Use models_pb2.TrackType enum."""
         if self.payload is None:
             return None
         return getattr(self.payload, "track_type", None)
 
     @property
-    def publish_option_id(self) -> Optional[int]:
+    def publish_option_id(self) -> int | None:
         """Access publish_option_id field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -594,7 +594,7 @@ class AudioSenderEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -614,10 +614,10 @@ class CallEndedEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.CallEnded."""
 
     type: str = field(default="stream.video.sfu.event.CallEnded", init=False)
-    payload: Optional[events_pb2.CallEnded] = field(default=None, repr=False)
+    payload: events_pb2.CallEnded | None = field(default=None, repr=False)
 
     @property
-    def reason(self) -> Optional[int]:
+    def reason(self) -> int | None:
         """Access reason field from the protobuf payload. Use models_pb2.CallEndedReason enum."""
         if self.payload is None:
             return None
@@ -628,7 +628,7 @@ class CallEndedEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -648,10 +648,10 @@ class CallGrantsUpdatedEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.CallGrantsUpdated."""
 
     type: str = field(default="stream.video.sfu.event.CallGrantsUpdated", init=False)
-    payload: Optional[events_pb2.CallGrantsUpdated] = field(default=None, repr=False)
+    payload: events_pb2.CallGrantsUpdated | None = field(default=None, repr=False)
 
     @property
-    def current_grants(self) -> Optional[CallGrants]:
+    def current_grants(self) -> CallGrants | None:
         """Access current_grants field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -659,7 +659,7 @@ class CallGrantsUpdatedEvent(BaseEvent):
         return CallGrants.from_proto(proto_val) if proto_val is not None else None
 
     @property
-    def message(self) -> Optional[str]:
+    def message(self) -> str | None:
         """Access message field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -670,7 +670,7 @@ class CallGrantsUpdatedEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -690,10 +690,10 @@ class ChangePublishOptionsEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.ChangePublishOptions."""
 
     type: str = field(default="stream.video.sfu.event.ChangePublishOptions", init=False)
-    payload: Optional[events_pb2.ChangePublishOptions] = field(default=None, repr=False)
+    payload: events_pb2.ChangePublishOptions | None = field(default=None, repr=False)
 
     @property
-    def publish_options(self) -> Optional[List[PublishOption]]:
+    def publish_options(self) -> list[PublishOption] | None:
         """Access publish_options field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -705,7 +705,7 @@ class ChangePublishOptionsEvent(BaseEvent):
         )
 
     @property
-    def reason(self) -> Optional[str]:
+    def reason(self) -> str | None:
         """Access reason field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -716,7 +716,7 @@ class ChangePublishOptionsEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -738,7 +738,7 @@ class ChangePublishOptionsCompleteEvent(BaseEvent):
     type: str = field(
         default="stream.video.sfu.event.ChangePublishOptionsComplete", init=False
     )
-    payload: Optional[events_pb2.ChangePublishOptionsComplete] = field(
+    payload: events_pb2.ChangePublishOptionsComplete | None = field(
         default=None, repr=False
     )
 
@@ -747,7 +747,7 @@ class ChangePublishOptionsCompleteEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -767,17 +767,17 @@ class ChangePublishQualityEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.ChangePublishQuality."""
 
     type: str = field(default="stream.video.sfu.event.ChangePublishQuality", init=False)
-    payload: Optional[events_pb2.ChangePublishQuality] = field(default=None, repr=False)
+    payload: events_pb2.ChangePublishQuality | None = field(default=None, repr=False)
 
     @property
-    def audio_senders(self) -> Optional[List[Any]]:
+    def audio_senders(self) -> list[Any] | None:
         """Access audio_senders field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "audio_senders", None)
 
     @property
-    def video_senders(self) -> Optional[List[Any]]:
+    def video_senders(self) -> list[Any] | None:
         """Access video_senders field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -788,7 +788,7 @@ class ChangePublishQualityEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -810,12 +810,12 @@ class ConnectionQualityChangedEvent(BaseEvent):
     type: str = field(
         default="stream.video.sfu.event.ConnectionQualityChanged", init=False
     )
-    payload: Optional[events_pb2.ConnectionQualityChanged] = field(
+    payload: events_pb2.ConnectionQualityChanged | None = field(
         default=None, repr=False
     )
 
     @property
-    def connection_quality_updates(self) -> Optional[List[Any]]:
+    def connection_quality_updates(self) -> list[Any] | None:
         """Access connection_quality_updates field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -826,7 +826,7 @@ class ConnectionQualityChangedEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -848,19 +848,17 @@ class ConnectionQualityInfoEvent(BaseEvent):
     type: str = field(
         default="stream.video.sfu.event.ConnectionQualityInfo", init=False
     )
-    payload: Optional[events_pb2.ConnectionQualityInfo] = field(
-        default=None, repr=False
-    )
+    payload: events_pb2.ConnectionQualityInfo | None = field(default=None, repr=False)
 
     @property
-    def user_id(self) -> Optional[str]:  # type: ignore[override]
+    def user_id(self) -> str | None:  # type: ignore[override]
         """Access user_id field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "user_id", None)
 
     @property
-    def connection_quality(self) -> Optional[int]:
+    def connection_quality(self) -> int | None:
         """Access connection_quality field from the protobuf payload. Use models_pb2.ConnectionQuality enum."""
         if self.payload is None:
             return None
@@ -871,7 +869,7 @@ class ConnectionQualityInfoEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -893,12 +891,10 @@ class DominantSpeakerChangedEvent(BaseEvent):
     type: str = field(
         default="stream.video.sfu.event.DominantSpeakerChanged", init=False
     )
-    payload: Optional[events_pb2.DominantSpeakerChanged] = field(
-        default=None, repr=False
-    )
+    payload: events_pb2.DominantSpeakerChanged | None = field(default=None, repr=False)
 
     @property
-    def user_id(self) -> Optional[str]:  # type: ignore[override]
+    def user_id(self) -> str | None:  # type: ignore[override]
         """Access user_id field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -909,7 +905,7 @@ class DominantSpeakerChangedEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -929,10 +925,10 @@ class ErrorEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.Error."""
 
     type: str = field(default="stream.video.sfu.event.Error", init=False)
-    payload: Optional[events_pb2.Error] = field(default=None, repr=False)
+    payload: events_pb2.Error | None = field(default=None, repr=False)
 
     @property
-    def error(self) -> Optional[Error]:
+    def error(self) -> Error | None:
         """Access error field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -940,7 +936,7 @@ class ErrorEvent(BaseEvent):
         return Error.from_proto(proto_val) if proto_val is not None else None
 
     @property
-    def reconnect_strategy(self) -> Optional[int]:
+    def reconnect_strategy(self) -> int | None:
         """Access reconnect_strategy field from the protobuf payload. Use models_pb2.WebsocketReconnectStrategy enum."""
         if self.payload is None:
             return None
@@ -951,7 +947,7 @@ class ErrorEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -971,10 +967,10 @@ class GoAwayEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.GoAway."""
 
     type: str = field(default="stream.video.sfu.event.GoAway", init=False)
-    payload: Optional[events_pb2.GoAway] = field(default=None, repr=False)
+    payload: events_pb2.GoAway | None = field(default=None, repr=False)
 
     @property
-    def reason(self) -> Optional[int]:
+    def reason(self) -> int | None:
         """Access reason field from the protobuf payload. Use models_pb2.GoAwayReason enum."""
         if self.payload is None:
             return None
@@ -985,7 +981,7 @@ class GoAwayEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -1005,14 +1001,14 @@ class HealthCheckRequestEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.HealthCheckRequest."""
 
     type: str = field(default="stream.video.sfu.event.HealthCheckRequest", init=False)
-    payload: Optional[events_pb2.HealthCheckRequest] = field(default=None, repr=False)
+    payload: events_pb2.HealthCheckRequest | None = field(default=None, repr=False)
 
     @classmethod
     def from_proto(cls, proto_obj: events_pb2.HealthCheckRequest, **extra):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -1032,10 +1028,10 @@ class HealthCheckResponseEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.HealthCheckResponse."""
 
     type: str = field(default="stream.video.sfu.event.HealthCheckResponse", init=False)
-    payload: Optional[events_pb2.HealthCheckResponse] = field(default=None, repr=False)
+    payload: events_pb2.HealthCheckResponse | None = field(default=None, repr=False)
 
     @property
-    def participant_count(self) -> Optional[ParticipantCount]:
+    def participant_count(self) -> ParticipantCount | None:
         """Access participant_count field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -1047,7 +1043,7 @@ class HealthCheckResponseEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -1067,10 +1063,10 @@ class ICERestartEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.ICERestart."""
 
     type: str = field(default="stream.video.sfu.event.ICERestart", init=False)
-    payload: Optional[events_pb2.ICERestart] = field(default=None, repr=False)
+    payload: events_pb2.ICERestart | None = field(default=None, repr=False)
 
     @property
-    def peer_type(self) -> Optional[int]:
+    def peer_type(self) -> int | None:
         """Access peer_type field from the protobuf payload. Use models_pb2.PeerType enum."""
         if self.payload is None:
             return None
@@ -1081,7 +1077,7 @@ class ICERestartEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -1101,17 +1097,17 @@ class ICETrickleEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.ICETrickle."""
 
     type: str = field(default="stream.video.sfu.event.ICETrickle", init=False)
-    payload: Optional[events_pb2.ICETrickle] = field(default=None, repr=False)
+    payload: events_pb2.ICETrickle | None = field(default=None, repr=False)
 
     @property
-    def peer_type(self) -> Optional[int]:
+    def peer_type(self) -> int | None:
         """Access peer_type field from the protobuf payload. Use models_pb2.PeerType enum."""
         if self.payload is None:
             return None
         return getattr(self.payload, "peer_type", None)
 
     @property
-    def ice_candidate(self) -> Optional[str]:
+    def ice_candidate(self) -> str | None:
         """Access ice_candidate field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -1122,7 +1118,7 @@ class ICETrickleEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -1144,12 +1140,12 @@ class InboundStateNotificationEvent(BaseEvent):
     type: str = field(
         default="stream.video.sfu.event.InboundStateNotification", init=False
     )
-    payload: Optional[events_pb2.InboundStateNotification] = field(
+    payload: events_pb2.InboundStateNotification | None = field(
         default=None, repr=False
     )
 
     @property
-    def inbound_video_states(self) -> Optional[List[Any]]:
+    def inbound_video_states(self) -> list[Any] | None:
         """Access inbound_video_states field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -1160,7 +1156,7 @@ class InboundStateNotificationEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -1180,24 +1176,24 @@ class InboundVideoStateEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.InboundVideoState."""
 
     type: str = field(default="stream.video.sfu.event.InboundVideoState", init=False)
-    payload: Optional[events_pb2.InboundVideoState] = field(default=None, repr=False)
+    payload: events_pb2.InboundVideoState | None = field(default=None, repr=False)
 
     @property
-    def user_id(self) -> Optional[str]:  # type: ignore[override]
+    def user_id(self) -> str | None:  # type: ignore[override]
         """Access user_id field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "user_id", None)
 
     @property
-    def track_type(self) -> Optional[int]:
+    def track_type(self) -> int | None:
         """Access track_type field from the protobuf payload. Use models_pb2.TrackType enum."""
         if self.payload is None:
             return None
         return getattr(self.payload, "track_type", None)
 
     @property
-    def paused(self) -> Optional[bool]:
+    def paused(self) -> bool | None:
         """Access paused field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -1208,7 +1204,7 @@ class InboundVideoStateEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -1228,31 +1224,31 @@ class JoinRequestEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.JoinRequest."""
 
     type: str = field(default="stream.video.sfu.event.JoinRequest", init=False)
-    payload: Optional[events_pb2.JoinRequest] = field(default=None, repr=False)
+    payload: events_pb2.JoinRequest | None = field(default=None, repr=False)
 
     @property
-    def token(self) -> Optional[str]:
+    def token(self) -> str | None:
         """Access token field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "token", None)
 
     @property
-    def subscriber_sdp(self) -> Optional[str]:
+    def subscriber_sdp(self) -> str | None:
         """Access subscriber_sdp field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "subscriber_sdp", None)
 
     @property
-    def publisher_sdp(self) -> Optional[str]:
+    def publisher_sdp(self) -> str | None:
         """Access publisher_sdp field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "publisher_sdp", None)
 
     @property
-    def client_details(self) -> Optional[ClientDetails]:
+    def client_details(self) -> ClientDetails | None:
         """Access client_details field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -1260,28 +1256,28 @@ class JoinRequestEvent(BaseEvent):
         return ClientDetails.from_proto(proto_val) if proto_val is not None else None
 
     @property
-    def migration(self) -> Optional[Any]:
+    def migration(self) -> Any | None:
         """Access migration field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "migration", None)
 
     @property
-    def fast_reconnect(self) -> Optional[bool]:
+    def fast_reconnect(self) -> bool | None:
         """Access fast_reconnect field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "fast_reconnect", None)
 
     @property
-    def reconnect_details(self) -> Optional[Any]:
+    def reconnect_details(self) -> Any | None:
         """Access reconnect_details field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "reconnect_details", None)
 
     @property
-    def preferred_publish_options(self) -> Optional[List[PublishOption]]:
+    def preferred_publish_options(self) -> list[PublishOption] | None:
         """Access preferred_publish_options field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -1293,7 +1289,7 @@ class JoinRequestEvent(BaseEvent):
         )
 
     @property
-    def preferred_subscribe_options(self) -> Optional[List[SubscribeOption]]:
+    def preferred_subscribe_options(self) -> list[SubscribeOption] | None:
         """Access preferred_subscribe_options field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -1305,7 +1301,7 @@ class JoinRequestEvent(BaseEvent):
         )
 
     @property
-    def capabilities(self) -> Optional[List[int]]:
+    def capabilities(self) -> list[int] | None:
         """Access capabilities field from the protobuf payload. Use models_pb2.ClientCapability enum."""
         if self.payload is None:
             return None
@@ -1316,7 +1312,7 @@ class JoinRequestEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -1336,10 +1332,10 @@ class JoinResponseEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.JoinResponse."""
 
     type: str = field(default="stream.video.sfu.event.JoinResponse", init=False)
-    payload: Optional[events_pb2.JoinResponse] = field(default=None, repr=False)
+    payload: events_pb2.JoinResponse | None = field(default=None, repr=False)
 
     @property
-    def call_state(self) -> Optional[CallState]:
+    def call_state(self) -> CallState | None:
         """Access call_state field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -1347,21 +1343,21 @@ class JoinResponseEvent(BaseEvent):
         return CallState.from_proto(proto_val) if proto_val is not None else None
 
     @property
-    def reconnected(self) -> Optional[bool]:
+    def reconnected(self) -> bool | None:
         """Access reconnected field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "reconnected", None)
 
     @property
-    def fast_reconnect_deadline_seconds(self) -> Optional[int]:
+    def fast_reconnect_deadline_seconds(self) -> int | None:
         """Access fast_reconnect_deadline_seconds field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "fast_reconnect_deadline_seconds", None)
 
     @property
-    def publish_options(self) -> Optional[List[PublishOption]]:
+    def publish_options(self) -> list[PublishOption] | None:
         """Access publish_options field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -1377,7 +1373,7 @@ class JoinResponseEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -1397,10 +1393,10 @@ class LeaveCallRequestEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.LeaveCallRequest."""
 
     type: str = field(default="stream.video.sfu.event.LeaveCallRequest", init=False)
-    payload: Optional[events_pb2.LeaveCallRequest] = field(default=None, repr=False)
+    payload: events_pb2.LeaveCallRequest | None = field(default=None, repr=False)
 
     @property
-    def reason(self) -> Optional[str]:
+    def reason(self) -> str | None:
         """Access reason field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -1411,7 +1407,7 @@ class LeaveCallRequestEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -1431,17 +1427,17 @@ class MigrationEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.Migration."""
 
     type: str = field(default="stream.video.sfu.event.Migration", init=False)
-    payload: Optional[events_pb2.Migration] = field(default=None, repr=False)
+    payload: events_pb2.Migration | None = field(default=None, repr=False)
 
     @property
-    def from_sfu_id(self) -> Optional[str]:
+    def from_sfu_id(self) -> str | None:
         """Access from_sfu_id field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "from_sfu_id", None)
 
     @property
-    def announced_tracks(self) -> Optional[List[TrackInfo]]:
+    def announced_tracks(self) -> list[TrackInfo] | None:
         """Access announced_tracks field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -1451,7 +1447,7 @@ class MigrationEvent(BaseEvent):
         )
 
     @property
-    def subscriptions(self) -> Optional[List[Any]]:
+    def subscriptions(self) -> list[Any] | None:
         """Access subscriptions field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -1462,7 +1458,7 @@ class MigrationEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -1482,18 +1478,18 @@ class ParticipantJoinedEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.ParticipantJoined."""
 
     type: str = field(default="stream.video.sfu.event.ParticipantJoined", init=False)
-    payload: Optional[events_pb2.ParticipantJoined] = field(default=None, repr=False)
-    _participant: Optional[Participant] = field(init=False, default=None, repr=False)
+    payload: events_pb2.ParticipantJoined | None = field(default=None, repr=False)
+    _participant: Participant | None = field(init=False, default=None, repr=False)
 
     @property
-    def call_cid(self) -> Optional[str]:
+    def call_cid(self) -> str | None:
         """Access call_cid field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "call_cid", None)
 
     @property  # type: ignore[misc]
-    def participant(self) -> Optional[Participant]:  # type: ignore[override]
+    def participant(self) -> Participant | None:  # type: ignore[override]
         """Access participant field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -1501,7 +1497,7 @@ class ParticipantJoinedEvent(BaseEvent):
         return Participant.from_proto(proto_val) if proto_val is not None else None
 
     @participant.setter  # type: ignore[misc]
-    def participant(self, value: Optional[Participant]) -> None:
+    def participant(self, value: Participant | None) -> None:
         """Setter for participant to satisfy dataclass __init__."""
         # Store in _participant but don't use it (payload takes precedence)
         self._participant = value
@@ -1511,7 +1507,7 @@ class ParticipantJoinedEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -1531,18 +1527,18 @@ class ParticipantLeftEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.ParticipantLeft."""
 
     type: str = field(default="stream.video.sfu.event.ParticipantLeft", init=False)
-    payload: Optional[events_pb2.ParticipantLeft] = field(default=None, repr=False)
-    _participant: Optional[Participant] = field(init=False, default=None, repr=False)
+    payload: events_pb2.ParticipantLeft | None = field(default=None, repr=False)
+    _participant: Participant | None = field(init=False, default=None, repr=False)
 
     @property
-    def call_cid(self) -> Optional[str]:
+    def call_cid(self) -> str | None:
         """Access call_cid field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "call_cid", None)
 
     @property  # type: ignore[misc]
-    def participant(self) -> Optional[Participant]:  # type: ignore[override]
+    def participant(self) -> Participant | None:  # type: ignore[override]
         """Access participant field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -1550,7 +1546,7 @@ class ParticipantLeftEvent(BaseEvent):
         return Participant.from_proto(proto_val) if proto_val is not None else None
 
     @participant.setter  # type: ignore[misc]
-    def participant(self, value: Optional[Participant]) -> None:
+    def participant(self, value: Participant | None) -> None:
         """Setter for participant to satisfy dataclass __init__."""
         # Store in _participant but don't use it (payload takes precedence)
         self._participant = value
@@ -1560,7 +1556,7 @@ class ParticipantLeftEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -1582,7 +1578,7 @@ class ParticipantMigrationCompleteEvent(BaseEvent):
     type: str = field(
         default="stream.video.sfu.event.ParticipantMigrationComplete", init=False
     )
-    payload: Optional[events_pb2.ParticipantMigrationComplete] = field(
+    payload: events_pb2.ParticipantMigrationComplete | None = field(
         default=None, repr=False
     )
 
@@ -1591,7 +1587,7 @@ class ParticipantMigrationCompleteEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -1611,18 +1607,18 @@ class ParticipantUpdatedEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.ParticipantUpdated."""
 
     type: str = field(default="stream.video.sfu.event.ParticipantUpdated", init=False)
-    payload: Optional[events_pb2.ParticipantUpdated] = field(default=None, repr=False)
-    _participant: Optional[Participant] = field(init=False, default=None, repr=False)
+    payload: events_pb2.ParticipantUpdated | None = field(default=None, repr=False)
+    _participant: Participant | None = field(init=False, default=None, repr=False)
 
     @property
-    def call_cid(self) -> Optional[str]:
+    def call_cid(self) -> str | None:
         """Access call_cid field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "call_cid", None)
 
     @property  # type: ignore[misc]
-    def participant(self) -> Optional[Participant]:  # type: ignore[override]
+    def participant(self) -> Participant | None:  # type: ignore[override]
         """Access participant field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -1630,7 +1626,7 @@ class ParticipantUpdatedEvent(BaseEvent):
         return Participant.from_proto(proto_val) if proto_val is not None else None
 
     @participant.setter  # type: ignore[misc]
-    def participant(self, value: Optional[Participant]) -> None:
+    def participant(self, value: Participant | None) -> None:
         """Setter for participant to satisfy dataclass __init__."""
         # Store in _participant but don't use it (payload takes precedence)
         self._participant = value
@@ -1640,7 +1636,7 @@ class ParticipantUpdatedEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -1660,10 +1656,10 @@ class PinsChangedEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.PinsChanged."""
 
     type: str = field(default="stream.video.sfu.event.PinsChanged", init=False)
-    payload: Optional[events_pb2.PinsChanged] = field(default=None, repr=False)
+    payload: events_pb2.PinsChanged | None = field(default=None, repr=False)
 
     @property
-    def pins(self) -> Optional[List[Pin]]:
+    def pins(self) -> list[Pin] | None:
         """Access pins field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -1675,7 +1671,7 @@ class PinsChangedEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -1695,10 +1691,10 @@ class PublisherAnswerEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.PublisherAnswer."""
 
     type: str = field(default="stream.video.sfu.event.PublisherAnswer", init=False)
-    payload: Optional[events_pb2.PublisherAnswer] = field(default=None, repr=False)
+    payload: events_pb2.PublisherAnswer | None = field(default=None, repr=False)
 
     @property
-    def sdp(self) -> Optional[str]:
+    def sdp(self) -> str | None:
         """Access sdp field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -1709,7 +1705,7 @@ class PublisherAnswerEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -1729,17 +1725,17 @@ class ReconnectDetailsEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.ReconnectDetails."""
 
     type: str = field(default="stream.video.sfu.event.ReconnectDetails", init=False)
-    payload: Optional[events_pb2.ReconnectDetails] = field(default=None, repr=False)
+    payload: events_pb2.ReconnectDetails | None = field(default=None, repr=False)
 
     @property
-    def strategy(self) -> Optional[int]:
+    def strategy(self) -> int | None:
         """Access strategy field from the protobuf payload. Use models_pb2.WebsocketReconnectStrategy enum."""
         if self.payload is None:
             return None
         return getattr(self.payload, "strategy", None)
 
     @property
-    def announced_tracks(self) -> Optional[List[TrackInfo]]:
+    def announced_tracks(self) -> list[TrackInfo] | None:
         """Access announced_tracks field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -1749,35 +1745,35 @@ class ReconnectDetailsEvent(BaseEvent):
         )
 
     @property
-    def subscriptions(self) -> Optional[List[Any]]:
+    def subscriptions(self) -> list[Any] | None:
         """Access subscriptions field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "subscriptions", None)
 
     @property
-    def reconnect_attempt(self) -> Optional[int]:
+    def reconnect_attempt(self) -> int | None:
         """Access reconnect_attempt field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "reconnect_attempt", None)
 
     @property
-    def from_sfu_id(self) -> Optional[str]:
+    def from_sfu_id(self) -> str | None:
         """Access from_sfu_id field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "from_sfu_id", None)
 
     @property
-    def previous_session_id(self) -> Optional[str]:
+    def previous_session_id(self) -> str | None:
         """Access previous_session_id field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "previous_session_id", None)
 
     @property
-    def reason(self) -> Optional[str]:
+    def reason(self) -> str | None:
         """Access reason field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -1788,7 +1784,7 @@ class ReconnectDetailsEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -1808,38 +1804,38 @@ class SfuEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.SfuEvent."""
 
     type: str = field(default="stream.video.sfu.event.SfuEvent", init=False)
-    payload: Optional[events_pb2.SfuEvent] = field(default=None, repr=False)
+    payload: events_pb2.SfuEvent | None = field(default=None, repr=False)
 
     @property
-    def subscriber_offer(self) -> Optional[Any]:
+    def subscriber_offer(self) -> Any | None:
         """Access subscriber_offer field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "subscriber_offer", None)
 
     @property
-    def publisher_answer(self) -> Optional[Any]:
+    def publisher_answer(self) -> Any | None:
         """Access publisher_answer field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "publisher_answer", None)
 
     @property
-    def connection_quality_changed(self) -> Optional[Any]:
+    def connection_quality_changed(self) -> Any | None:
         """Access connection_quality_changed field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "connection_quality_changed", None)
 
     @property
-    def audio_level_changed(self) -> Optional[Any]:
+    def audio_level_changed(self) -> Any | None:
         """Access audio_level_changed field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "audio_level_changed", None)
 
     @property
-    def ice_trickle(self) -> Optional[ICETrickle]:
+    def ice_trickle(self) -> ICETrickle | None:
         """Access ice_trickle field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -1847,126 +1843,126 @@ class SfuEvent(BaseEvent):
         return ICETrickle.from_proto(proto_val) if proto_val is not None else None
 
     @property
-    def change_publish_quality(self) -> Optional[Any]:
+    def change_publish_quality(self) -> Any | None:
         """Access change_publish_quality field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "change_publish_quality", None)
 
     @property
-    def participant_joined(self) -> Optional[Any]:
+    def participant_joined(self) -> Any | None:
         """Access participant_joined field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "participant_joined", None)
 
     @property
-    def participant_left(self) -> Optional[Any]:
+    def participant_left(self) -> Any | None:
         """Access participant_left field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "participant_left", None)
 
     @property
-    def dominant_speaker_changed(self) -> Optional[Any]:
+    def dominant_speaker_changed(self) -> Any | None:
         """Access dominant_speaker_changed field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "dominant_speaker_changed", None)
 
     @property
-    def join_response(self) -> Optional[Any]:
+    def join_response(self) -> Any | None:
         """Access join_response field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "join_response", None)
 
     @property
-    def health_check_response(self) -> Optional[Any]:
+    def health_check_response(self) -> Any | None:
         """Access health_check_response field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "health_check_response", None)
 
     @property
-    def track_published(self) -> Optional[Any]:
+    def track_published(self) -> Any | None:
         """Access track_published field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "track_published", None)
 
     @property
-    def track_unpublished(self) -> Optional[Any]:
+    def track_unpublished(self) -> Any | None:
         """Access track_unpublished field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "track_unpublished", None)
 
     @property
-    def error(self) -> Optional[Any]:
+    def error(self) -> Any | None:
         """Access error field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "error", None)
 
     @property
-    def call_grants_updated(self) -> Optional[Any]:
+    def call_grants_updated(self) -> Any | None:
         """Access call_grants_updated field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "call_grants_updated", None)
 
     @property
-    def go_away(self) -> Optional[Any]:
+    def go_away(self) -> Any | None:
         """Access go_away field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "go_away", None)
 
     @property
-    def ice_restart(self) -> Optional[Any]:
+    def ice_restart(self) -> Any | None:
         """Access ice_restart field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "ice_restart", None)
 
     @property
-    def pins_updated(self) -> Optional[Any]:
+    def pins_updated(self) -> Any | None:
         """Access pins_updated field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "pins_updated", None)
 
     @property
-    def call_ended(self) -> Optional[Any]:
+    def call_ended(self) -> Any | None:
         """Access call_ended field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "call_ended", None)
 
     @property
-    def participant_updated(self) -> Optional[Any]:
+    def participant_updated(self) -> Any | None:
         """Access participant_updated field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "participant_updated", None)
 
     @property
-    def participant_migration_complete(self) -> Optional[Any]:
+    def participant_migration_complete(self) -> Any | None:
         """Access participant_migration_complete field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "participant_migration_complete", None)
 
     @property
-    def change_publish_options(self) -> Optional[Any]:
+    def change_publish_options(self) -> Any | None:
         """Access change_publish_options field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "change_publish_options", None)
 
     @property
-    def inbound_state_notification(self) -> Optional[Any]:
+    def inbound_state_notification(self) -> Any | None:
         """Access inbound_state_notification field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -1977,7 +1973,7 @@ class SfuEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -1997,24 +1993,24 @@ class SfuRequestEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.SfuRequest."""
 
     type: str = field(default="stream.video.sfu.event.SfuRequest", init=False)
-    payload: Optional[events_pb2.SfuRequest] = field(default=None, repr=False)
+    payload: events_pb2.SfuRequest | None = field(default=None, repr=False)
 
     @property
-    def join_request(self) -> Optional[Any]:
+    def join_request(self) -> Any | None:
         """Access join_request field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "join_request", None)
 
     @property
-    def health_check_request(self) -> Optional[Any]:
+    def health_check_request(self) -> Any | None:
         """Access health_check_request field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "health_check_request", None)
 
     @property
-    def leave_call_request(self) -> Optional[Any]:
+    def leave_call_request(self) -> Any | None:
         """Access leave_call_request field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -2025,7 +2021,7 @@ class SfuRequestEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -2045,17 +2041,17 @@ class SubscriberOfferEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.SubscriberOffer."""
 
     type: str = field(default="stream.video.sfu.event.SubscriberOffer", init=False)
-    payload: Optional[events_pb2.SubscriberOffer] = field(default=None, repr=False)
+    payload: events_pb2.SubscriberOffer | None = field(default=None, repr=False)
 
     @property
-    def ice_restart(self) -> Optional[bool]:
+    def ice_restart(self) -> bool | None:
         """Access ice_restart field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "ice_restart", None)
 
     @property
-    def sdp(self) -> Optional[str]:
+    def sdp(self) -> str | None:
         """Access sdp field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -2066,7 +2062,7 @@ class SubscriberOfferEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -2086,18 +2082,18 @@ class TrackPublishedEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.TrackPublished."""
 
     type: str = field(default="stream.video.sfu.event.TrackPublished", init=False)
-    payload: Optional[events_pb2.TrackPublished] = field(default=None, repr=False)
-    _participant: Optional[Participant] = field(init=False, default=None, repr=False)
+    payload: events_pb2.TrackPublished | None = field(default=None, repr=False)
+    _participant: Participant | None = field(init=False, default=None, repr=False)
 
     @property
-    def user_id(self) -> Optional[str]:  # type: ignore[override]
+    def user_id(self) -> str | None:  # type: ignore[override]
         """Access user_id field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "user_id", None)
 
     @property  # type: ignore[misc]
-    def participant(self) -> Optional[Participant]:  # type: ignore[override]
+    def participant(self) -> Participant | None:  # type: ignore[override]
         """Access participant field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -2105,7 +2101,7 @@ class TrackPublishedEvent(BaseEvent):
         return Participant.from_proto(proto_val) if proto_val is not None else None
 
     @participant.setter  # type: ignore[misc]
-    def participant(self, value: Optional[Participant]) -> None:
+    def participant(self, value: Participant | None) -> None:
         """Setter for participant to satisfy dataclass __init__."""
         # Store in _participant but don't use it (payload takes precedence)
         self._participant = value
@@ -2115,7 +2111,7 @@ class TrackPublishedEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -2135,25 +2131,25 @@ class TrackUnpublishedEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.TrackUnpublished."""
 
     type: str = field(default="stream.video.sfu.event.TrackUnpublished", init=False)
-    payload: Optional[events_pb2.TrackUnpublished] = field(default=None, repr=False)
-    _participant: Optional[Participant] = field(init=False, default=None, repr=False)
+    payload: events_pb2.TrackUnpublished | None = field(default=None, repr=False)
+    _participant: Participant | None = field(init=False, default=None, repr=False)
 
     @property
-    def user_id(self) -> Optional[str]:  # type: ignore[override]
+    def user_id(self) -> str | None:  # type: ignore[override]
         """Access user_id field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "user_id", None)
 
     @property
-    def cause(self) -> Optional[int]:
+    def cause(self) -> int | None:
         """Access cause field from the protobuf payload. Use models_pb2.TrackUnpublishReason enum."""
         if self.payload is None:
             return None
         return getattr(self.payload, "cause", None)
 
     @property  # type: ignore[misc]
-    def participant(self) -> Optional[Participant]:  # type: ignore[override]
+    def participant(self) -> Participant | None:  # type: ignore[override]
         """Access participant field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -2161,7 +2157,7 @@ class TrackUnpublishedEvent(BaseEvent):
         return Participant.from_proto(proto_val) if proto_val is not None else None
 
     @participant.setter  # type: ignore[misc]
-    def participant(self, value: Optional[Participant]) -> None:
+    def participant(self, value: Participant | None) -> None:
         """Setter for participant to satisfy dataclass __init__."""
         # Store in _participant but don't use it (payload takes precedence)
         self._participant = value
@@ -2171,7 +2167,7 @@ class TrackUnpublishedEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -2191,38 +2187,38 @@ class VideoLayerSettingEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.VideoLayerSetting."""
 
     type: str = field(default="stream.video.sfu.event.VideoLayerSetting", init=False)
-    payload: Optional[events_pb2.VideoLayerSetting] = field(default=None, repr=False)
+    payload: events_pb2.VideoLayerSetting | None = field(default=None, repr=False)
 
     @property
-    def name(self) -> Optional[str]:
+    def name(self) -> str | None:
         """Access name field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "name", None)
 
     @property
-    def active(self) -> Optional[bool]:
+    def active(self) -> bool | None:
         """Access active field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "active", None)
 
     @property
-    def max_bitrate(self) -> Optional[int]:
+    def max_bitrate(self) -> int | None:
         """Access max_bitrate field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "max_bitrate", None)
 
     @property
-    def scale_resolution_down_by(self) -> Optional[float]:
+    def scale_resolution_down_by(self) -> float | None:
         """Access scale_resolution_down_by field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "scale_resolution_down_by", None)
 
     @property
-    def codec(self) -> Optional[Codec]:
+    def codec(self) -> Codec | None:
         """Access codec field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -2230,14 +2226,14 @@ class VideoLayerSettingEvent(BaseEvent):
         return Codec.from_proto(proto_val) if proto_val is not None else None
 
     @property
-    def max_framerate(self) -> Optional[int]:
+    def max_framerate(self) -> int | None:
         """Access max_framerate field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "max_framerate", None)
 
     @property
-    def scalability_mode(self) -> Optional[str]:
+    def scalability_mode(self) -> str | None:
         """Access scalability_mode field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -2248,7 +2244,7 @@ class VideoLayerSettingEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}
@@ -2268,10 +2264,10 @@ class VideoSenderEvent(BaseEvent):
     """Dataclass event for video.sfu.event.events_pb2.VideoSender."""
 
     type: str = field(default="stream.video.sfu.event.VideoSender", init=False)
-    payload: Optional[events_pb2.VideoSender] = field(default=None, repr=False)
+    payload: events_pb2.VideoSender | None = field(default=None, repr=False)
 
     @property
-    def codec(self) -> Optional[Codec]:
+    def codec(self) -> Codec | None:
         """Access codec field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -2279,21 +2275,21 @@ class VideoSenderEvent(BaseEvent):
         return Codec.from_proto(proto_val) if proto_val is not None else None
 
     @property
-    def layers(self) -> Optional[List[Any]]:
+    def layers(self) -> list[Any] | None:
         """Access layers field from the protobuf payload."""
         if self.payload is None:
             return None
         return getattr(self.payload, "layers", None)
 
     @property
-    def track_type(self) -> Optional[int]:
+    def track_type(self) -> int | None:
         """Access track_type field from the protobuf payload. Use models_pb2.TrackType enum."""
         if self.payload is None:
             return None
         return getattr(self.payload, "track_type", None)
 
     @property
-    def publish_option_id(self) -> Optional[int]:
+    def publish_option_id(self) -> int | None:
         """Access publish_option_id field from the protobuf payload."""
         if self.payload is None:
             return None
@@ -2304,7 +2300,7 @@ class VideoSenderEvent(BaseEvent):
         """Create event instance from protobuf message."""
         return cls(payload=proto_obj, **extra)
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         """Convert protobuf payload to dictionary."""
         if self.payload is None:
             return {}

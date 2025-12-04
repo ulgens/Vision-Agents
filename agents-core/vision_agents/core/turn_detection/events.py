@@ -1,7 +1,7 @@
 """Turn detection events for the new event system."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional
+from typing import Any
 
 from vision_agents.core.edge.types import Participant
 from vision_agents.core.events.base import PluginBaseEvent
@@ -20,9 +20,9 @@ class TurnStartedEvent(PluginBaseEvent):
     """
 
     type: str = field(default="plugin.turn_started", init=False)
-    participant: Optional[Participant] = None
-    confidence: Optional[float] = None
-    custom: Optional[Dict[str, Any]] = None
+    participant: Participant | None = None
+    confidence: float | None = None
+    custom: dict[str, Any] | None = None
 
 
 @dataclass
@@ -38,11 +38,11 @@ class TurnEndedEvent(PluginBaseEvent):
     """
 
     type: str = field(default="plugin.turn_ended", init=False)
-    participant: Optional[Participant] = None
-    confidence: Optional[float] = None
-    trailing_silence_ms: Optional[float] = None
-    duration_ms: Optional[float] = None
-    custom: Optional[Dict[str, Any]] = None
+    participant: Participant | None = None
+    confidence: float | None = None
+    trailing_silence_ms: float | None = None
+    duration_ms: float | None = None
+    custom: dict[str, Any] | None = None
     eager_end_of_turn: bool = False
 
 

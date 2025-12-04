@@ -2,7 +2,7 @@ import asyncio
 import base64
 import logging
 import os
-from typing import Optional, Any
+from typing import Any
 
 from elevenlabs.client import AsyncElevenLabs
 from elevenlabs import (
@@ -39,11 +39,11 @@ class STT(stt.STT):
     """
 
     turn_detection: bool = False  # Scribe v2 does not support turn detection
-    connection: Optional[RealtimeConnection] = None
+    connection: RealtimeConnection | None = None
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         model_id: str = "scribe_v2_realtime",
         language_code: str = "en",
         vad_silence_threshold_secs: float = 0.3,
@@ -51,7 +51,7 @@ class STT(stt.STT):
         min_speech_duration_ms: int = 100,
         min_silence_duration_ms: int = 100,
         audio_chunk_duration_ms: int = 100,
-        client: Optional[AsyncElevenLabs] = None,
+        client: AsyncElevenLabs | None = None,
     ):
         """
         Initialize ElevenLabs Scribe v2 STT.
@@ -82,11 +82,11 @@ class STT(stt.STT):
         self.min_silence_duration_ms = min_silence_duration_ms
         self.audio_chunk_duration_ms = audio_chunk_duration_ms
 
-        self._current_participant: Optional[Participant] = None
+        self._current_participant: Participant | None = None
         self._connection_ready = asyncio.Event()
-        self._listen_task: Optional[asyncio.Task[Any]] = None
-        self._send_task: Optional[asyncio.Task[Any]] = None
-        self._audio_queue: Optional[AudioQueue] = None
+        self._listen_task: asyncio.Task[Any] | None = None
+        self._send_task: asyncio.Task[Any] | None = None
+        self._audio_queue: AudioQueue | None = None
         self._should_reconnect = {"value": False}
         self._reconnect_event = asyncio.Event()
         self._commit_received = asyncio.Event()
@@ -94,7 +94,7 @@ class STT(stt.STT):
     async def process_audio(
         self,
         pcm_data: PcmData,
-        participant: Optional[Participant] = None,
+        participant: Participant | None = None,
     ):
         """
         Process audio data through ElevenLabs Scribe v2 for transcription.
@@ -240,7 +240,7 @@ class STT(stt.STT):
             return
 
         # Build response metadata with word timestamps if available
-        other: Optional[dict[str, Any]] = None
+        other: dict[str, Any] | None = None
         if words:
             other = {"words": words}
 
@@ -287,7 +287,7 @@ class STT(stt.STT):
             return
 
         # Build response metadata with word timestamps if available
-        other: Optional[dict[str, Any]] = None
+        other: dict[str, Any] | None = None
         if words:
             other = {"words": words}
 

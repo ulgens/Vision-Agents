@@ -9,7 +9,7 @@ Integration tests require HF_TOKEN environment variable (for gated model access)
 
 import os
 from pathlib import Path
-from typing import Iterator
+from collections.abc import Iterator
 
 import pytest
 import av

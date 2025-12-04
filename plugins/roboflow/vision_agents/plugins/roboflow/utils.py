@@ -1,4 +1,4 @@
-from typing import Iterable, Optional
+from collections.abc import Iterable
 
 import cv2
 import numpy as np
@@ -9,7 +9,7 @@ def annotate_image(
     image: np.ndarray,
     detections: sv.Detections,
     classes: dict[int, str],
-    dim_factor: Optional[float] = None,
+    dim_factor: float | None = None,
 ) -> np.ndarray:
     """
     Draw bounding boxes and labels on frame.

@@ -10,14 +10,8 @@ from __future__ import annotations
 import pathlib
 from typing import (
     Dict as TypingDict,
-    Iterable,
-    List,
-    Optional,
-    Sequence,
-    Set,
-    Tuple,
-    Type,
 )
+from collections.abc import Iterable, Sequence
 
 from google.protobuf.descriptor import FieldDescriptor
 from google.protobuf.message import Message
@@ -53,7 +47,7 @@ HEADER_LINES: Sequence[str] = (
 )
 
 
-def _iter_protobuf_messages() -> Iterable[Tuple[str, Type[Message]]]:
+def _iter_protobuf_messages() -> Iterable[tuple[str, type[Message]]]:
     for name in sorted(dir(events_pb2)):
         attr = getattr(events_pb2, name)
         if isinstance(attr, type) and issubclass(attr, Message):
@@ -64,10 +58,10 @@ def _class_name(proto_name: str) -> str:
     return proto_name if proto_name.endswith("Event") else proto_name + "Event"
 
 
-def _collect_message_types() -> TypingDict[str, Type[Message]]:
+def _collect_message_types() -> TypingDict[str, type[Message]]:
     """Collect all message types referenced in event fields (recursively)."""
-    message_types: TypingDict[str, Type[Message]] = {}
-    to_process: Set[str] = set()
+    message_types: TypingDict[str, type[Message]] = {}
+    to_process: set[str] = set()
 
     # Collect all message types from events
     for proto_name, message_cls in _iter_protobuf_messages():
@@ -79,7 +73,7 @@ def _collect_message_types() -> TypingDict[str, Type[Message]]:
                     to_process.add(class_name)
 
     # Process messages and their nested message types recursively
-    processed: Set[str] = set()
+    processed: set[str] = set()
     while to_process:
         class_name = to_process.pop()
         if class_name in processed:
@@ -102,7 +96,7 @@ def _collect_message_types() -> TypingDict[str, Type[Message]]:
     return message_types
 
 
-def _get_message_type_name(field_descriptor: FieldDescriptor) -> Optional[str]:
+def _get_message_type_name(field_descriptor: FieldDescriptor) -> str | None:
     """Get the wrapper class name for a message type field."""
     if field_descriptor.type == FieldDescriptor.TYPE_MESSAGE:
         message_type_name = field_descriptor.message_type.full_name
@@ -116,7 +110,7 @@ def _get_message_type_name(field_descriptor: FieldDescriptor) -> Optional[str]:
     return None
 
 
-def _get_enum_type_name(field_descriptor: FieldDescriptor) -> Optional[str]:
+def _get_enum_type_name(field_descriptor: FieldDescriptor) -> str | None:
     """Get the enum class name for an enum type field for documentation purposes."""
     if field_descriptor.type == FieldDescriptor.TYPE_ENUM:
         enum_type_name = field_descriptor.enum_type.full_name
@@ -180,7 +174,7 @@ def _get_python_type_from_protobuf_field(field_descriptor: FieldDescriptor) -> s
     return f"Optional[{base_type}]"
 
 
-def _render_message_wrapper(class_name: str, message_cls: Type[Message]) -> List[str]:
+def _render_message_wrapper(class_name: str, message_cls: type[Message]) -> list[str]:
     """Generate a dataclass wrapper for a protobuf message type (like Participant)."""
     lines = ["@dataclass", f"class {class_name}(DataClassJsonMixin):"]
 
@@ -272,7 +266,7 @@ def _render_message_wrapper(class_name: str, message_cls: Type[Message]) -> List
     return lines
 
 
-def _render_class(proto_name: str, message_cls: Type[Message]) -> List[str]:
+def _render_class(proto_name: str, message_cls: type[Message]) -> list[str]:
     class_name = _class_name(proto_name)
     event_type = message_cls.DESCRIPTOR.full_name
 
@@ -345,9 +339,7 @@ def _render_class(proto_name: str, message_cls: Type[Message]) -> List[str]:
     lines.append("")
     lines.append("    @classmethod")
     lines.append(
-        "    def from_proto(cls, proto_obj: events_pb2.{0}, **extra):".format(
-            proto_name
-        )
+        f"    def from_proto(cls, proto_obj: events_pb2.{proto_name}, **extra):"
     )
     lines.append('        """Create event instance from protobuf message."""')
     lines.append("        return cls(payload=proto_obj, **extra)")
@@ -369,7 +361,7 @@ def _render_class(proto_name: str, message_cls: Type[Message]) -> List[str]:
     return lines
 
 
-def _render_module_body() -> Tuple[List[str], List[str], List[str]]:
+def _render_module_body() -> tuple[list[str], list[str], list[str]]:
     """Generate message wrappers and event classes.
 
     Returns:
@@ -379,15 +371,15 @@ def _render_module_body() -> Tuple[List[str], List[str], List[str]]:
     message_types = _collect_message_types()
 
     # Generate message wrapper classes
-    message_wrapper_blocks: List[str] = []
+    message_wrapper_blocks: list[str] = []
     for class_name in sorted(message_types.keys()):
         message_cls = message_types[class_name]
         wrapper_lines = _render_message_wrapper(class_name, message_cls)
         message_wrapper_blocks.append("\n".join(wrapper_lines))
 
     # Generate event classes
-    event_class_blocks: List[str] = []
-    event_class_names: List[str] = []
+    event_class_blocks: list[str] = []
+    event_class_names: list[str] = []
 
     for proto_name, message_cls in _iter_protobuf_messages():
         class_name = _class_name(proto_name)
@@ -401,7 +393,7 @@ def _render_module_body() -> Tuple[List[str], List[str], List[str]]:
 def _build_module() -> str:
     message_wrappers, event_classes, event_names = _render_module_body()
 
-    parts: List[str] = [
+    parts: list[str] = [
         '"""Auto-generated SFU event dataclasses. Do not edit manually."""',
         "# Generated by _generate_sfu_events.py",
         *HEADER_LINES,

@@ -1,6 +1,7 @@
 import asyncio
 import os
-from typing import Optional, Union, Iterator, AsyncIterator, List, Any
+from typing import Any
+from collections.abc import Iterator, AsyncIterator
 
 import boto3
 
@@ -23,13 +24,13 @@ class TTS(BaseTTS):
     def __init__(
         self,
         *,
-        region_name: Optional[str] = None,
+        region_name: str | None = None,
         voice_id: str = "Joanna",
-        text_type: Optional[str] = "text",  # 'text' | 'ssml'
-        engine: Optional[str] = None,  # 'standard' | 'neural'
-        language_code: Optional[str] = None,
-        lexicon_names: Optional[List[str]] = None,
-        client: Optional[Any] = None,
+        text_type: str | None = "text",  # 'text' | 'ssml'
+        engine: str | None = None,  # 'standard' | 'neural'
+        language_code: str | None = None,
+        lexicon_names: list[str] | None = None,
+        client: Any | None = None,
     ) -> None:
         super().__init__(provider_name="aws_polly")
         self.region_name = (
@@ -61,7 +62,7 @@ class TTS(BaseTTS):
 
     async def stream_audio(
         self, text: str, *_, **__
-    ) -> Union[PcmData, Iterator[PcmData], AsyncIterator[PcmData]]:
+    ) -> PcmData | Iterator[PcmData] | AsyncIterator[PcmData]:
         """Synthesize the entire speech to a single PCM buffer.
 
         Returns PcmData with s16 format and the configured sample rate.

@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, Dict, Any
+from typing import Any
 from os import getenv
 import aiohttp
 
@@ -19,7 +19,7 @@ class HeyGenSession:
         self,
         avatar_id: str = "default",
         quality: VideoQuality = VideoQuality.HIGH,
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
     ):
         """Initialize HeyGen session manager.
 
@@ -39,11 +39,11 @@ class HeyGenSession:
             )
 
         self.base_url = "https://api.heygen.com/v1"
-        self.session_id: Optional[str] = None
-        self.session_info: Optional[Dict[str, Any]] = None
-        self._http_session: Optional[aiohttp.ClientSession] = None
+        self.session_id: str | None = None
+        self.session_info: dict[str, Any] | None = None
+        self._http_session: aiohttp.ClientSession | None = None
 
-    async def create_session(self) -> Dict[str, Any]:
+    async def create_session(self) -> dict[str, Any]:
         """Create a new HeyGen streaming session.
 
         Returns:
@@ -85,7 +85,7 @@ class HeyGenSession:
             logger.error(f"Failed to create HeyGen session: {e}")
             raise
 
-    async def start_session(self, sdp_answer: Optional[str] = None) -> Dict[str, Any]:
+    async def start_session(self, sdp_answer: str | None = None) -> dict[str, Any]:
         """Start the HeyGen streaming session.
 
         Args:
@@ -105,7 +105,7 @@ class HeyGenSession:
             "Content-Type": "application/json",
         }
 
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "session_id": self.session_id,
         }
 
@@ -133,7 +133,7 @@ class HeyGenSession:
             logger.error(f"Failed to start HeyGen session: {e}")
             raise
 
-    async def send_task(self, text: str, task_type: str = "repeat") -> Dict[str, Any]:
+    async def send_task(self, text: str, task_type: str = "repeat") -> dict[str, Any]:
         """Send a text task to HeyGen for the avatar to speak.
 
         This is the proper way to achieve lip-sync with HeyGen - send text,

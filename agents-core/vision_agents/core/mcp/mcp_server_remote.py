@@ -1,7 +1,7 @@
 """Remote MCP server connection using HTTP Streamable transport."""
 
 from datetime import timedelta
-from typing import Optional, Dict, Callable
+from collections.abc import Callable
 from urllib.parse import urlparse
 
 from mcp import ClientSession
@@ -16,7 +16,7 @@ class MCPServerRemote(MCPBaseServer):
     def __init__(
         self,
         url: str,
-        headers: Optional[Dict[str, str]] = None,
+        headers: dict[str, str] | None = None,
         timeout: float = 30.0,
         session_timeout: float = 300.0,
     ):
@@ -32,9 +32,9 @@ class MCPServerRemote(MCPBaseServer):
         self.url = url
         self.headers = headers or {}
         self.timeout = timeout
-        self._client_context: Optional[object] = None  # AsyncGeneratorContextManager
-        self._session_context: Optional[object] = None  # ClientSession context manager
-        self._get_session_id_cb: Optional[Callable[[], Optional[str]]] = None
+        self._client_context: object | None = None  # AsyncGeneratorContextManager
+        self._session_context: object | None = None  # ClientSession context manager
+        self._get_session_id_cb: Callable[[], str | None] | None = None
 
         # Validate URL
         parsed = urlparse(url)

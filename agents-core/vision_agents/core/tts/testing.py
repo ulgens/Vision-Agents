@@ -1,7 +1,6 @@
 from __future__ import annotations
 import asyncio
 from dataclasses import dataclass, field
-from typing import List
 
 from . import TTS
 from .events import (
@@ -16,8 +15,8 @@ from getstream.video.rtc import PcmData
 
 @dataclass
 class TTSResult:
-    speeches: List[PcmData] = field(default_factory=list)
-    errors: List[Exception] = field(default_factory=list)
+    speeches: list[PcmData] = field(default_factory=list)
+    errors: list[Exception] = field(default_factory=list)
     started: bool = False
     completed: bool = False
 
@@ -35,8 +34,8 @@ class TTSSession:
 
     def __init__(self, tts: TTS):
         self._tts = tts
-        self._speeches: List[PcmData] = []
-        self._errors: List[Exception] = []
+        self._speeches: list[PcmData] = []
+        self._errors: list[Exception] = []
         self._started = False
         self._completed = False
         self._first_event = asyncio.Event()
@@ -62,11 +61,11 @@ class TTSSession:
             self._completed = True
 
     @property
-    def speeches(self) -> List[PcmData]:
+    def speeches(self) -> list[PcmData]:
         return self._speeches
 
     @property
-    def errors(self) -> List[Exception]:
+    def errors(self) -> list[Exception]:
         return self._errors
 
     async def wait_for_result(self, timeout: float = 10.0) -> TTSResult:

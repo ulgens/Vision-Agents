@@ -2,7 +2,6 @@ import asyncio
 import importlib.metadata
 import logging
 import os
-from typing import Dict, Optional
 
 import httpx
 
@@ -10,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 # Type alias for markdown file contents: maps filename to file content
-MarkdownFileContents = Dict[str, str]
+MarkdownFileContents = dict[str, str]
 
 # Cache version at module load time to avoid blocking I/O during async operations
 _VISION_AGENTS_VERSION: str | None = None
@@ -27,7 +26,7 @@ def _load_version() -> str:
 _VISION_AGENTS_VERSION = _load_version()
 
 
-def get_vision_agents_version() -> Optional[str]:
+def get_vision_agents_version() -> str | None:
     """
     Get the installed vision-agents package version.
 

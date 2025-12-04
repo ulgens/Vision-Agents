@@ -2,7 +2,8 @@ import abc
 import logging
 import time
 import uuid
-from typing import Optional, Dict, Union, Iterator, AsyncIterator, AsyncGenerator, Any
+from typing import Any
+from collections.abc import Iterator, AsyncIterator, AsyncGenerator
 
 import av
 
@@ -47,7 +48,7 @@ class TTS(abc.ABC):
     Implementations should inherit from this class and implement the synthesize method.
     """
 
-    def __init__(self, provider_name: Optional[str] = None):
+    def __init__(self, provider_name: str | None = None):
         """
         Initialize the TTS base class.
 
@@ -66,9 +67,9 @@ class TTS(abc.ABC):
         self._desired_format: AudioFormat = AudioFormat.PCM_S16
 
         # Persistent resampler to avoid discontinuities between chunks
-        self._resampler: Optional[av.AudioResampler] = None
-        self._resampler_input_rate: Optional[int] = None
-        self._resampler_input_channels: Optional[int] = None
+        self._resampler: av.AudioResampler | None = None
+        self._resampler_input_rate: int | None = None
+        self._resampler_input_channels: int | None = None
 
     async def warmup(self) -> None:
         """
@@ -135,7 +136,7 @@ class TTS(abc.ABC):
         is_final: bool,
         synthesis_id: str,
         text: str,
-        user: Optional[Dict[str, Any]],
+        user: dict[str, Any] | None,
     ) -> tuple[int, float]:
         """Emit TTSAudioEvent; return (bytes_len, duration_ms)."""
 
@@ -162,14 +163,14 @@ class TTS(abc.ABC):
     @abc.abstractmethod
     async def stream_audio(
         self, text: str, *args, **kwargs
-    ) -> Union[
-        bytes,
-        Iterator[bytes],
-        AsyncIterator[bytes],
-        PcmData,
-        Iterator[PcmData],
-        AsyncIterator[PcmData],
-    ]:
+    ) -> (
+        bytes
+        | Iterator[bytes]
+        | AsyncIterator[bytes]
+        | PcmData
+        | Iterator[PcmData]
+        | AsyncIterator[PcmData]
+    ):
         """
         Convert text to speech audio data.
 
@@ -200,7 +201,7 @@ class TTS(abc.ABC):
         pass
 
     async def send(
-        self, text: str, user: Optional[Dict[str, Any]] = None, *args, **kwargs
+        self, text: str, user: dict[str, Any] | None = None, *args, **kwargs
     ):
         """
         Convert text to speech and emit audio events with the desired format.

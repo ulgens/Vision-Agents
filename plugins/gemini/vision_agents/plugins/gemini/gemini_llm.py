@@ -1,5 +1,6 @@
 import uuid
-from typing import Optional, List, TYPE_CHECKING, Any, Dict, AsyncIterator
+from typing import TYPE_CHECKING, Any
+from collections.abc import AsyncIterator
 
 from google.genai.client import AsyncClient, Client
 from google.genai import types
@@ -52,11 +53,11 @@ class GeminiLLM(LLM):
     def __init__(
         self,
         model: str = DEFAULT_MODEL,
-        api_key: Optional[str] = None,
-        client: Optional[AsyncClient] = None,
-        thinking_level: Optional[ThinkingLevel] = None,
-        media_resolution: Optional[MediaResolution] = None,
-        config: Optional[GenerateContentConfig] = None,
+        api_key: str | None = None,
+        client: AsyncClient | None = None,
+        thinking_level: ThinkingLevel | None = None,
+        media_resolution: MediaResolution | None = None,
+        config: GenerateContentConfig | None = None,
         **kwargs,
     ):
         """
@@ -84,13 +85,13 @@ class GeminiLLM(LLM):
         self.media_resolution = media_resolution
 
         if config is not None:
-            self._base_config: Optional[GenerateContentConfig] = config
+            self._base_config: GenerateContentConfig | None = config
         elif kwargs:
             self._base_config = GenerateContentConfig(**kwargs)
         else:
             self._base_config = None
 
-        self.chat: Optional[Any] = None
+        self.chat: Any | None = None
 
         if client is not None:
             self.client = client
@@ -99,8 +100,8 @@ class GeminiLLM(LLM):
 
     def _build_config(
         self,
-        system_instruction: Optional[str] = None,
-        base_config: Optional[GenerateContentConfig] = None,
+        system_instruction: str | None = None,
+        base_config: GenerateContentConfig | None = None,
     ) -> GenerateContentConfig:
         """
         Build GenerateContentConfig with Gemini 3 features.
@@ -141,8 +142,8 @@ class GeminiLLM(LLM):
     async def simple_response(
         self,
         text: str,
-        processors: Optional[List[Processor]] = None,
-        participant: Optional[Any] = None,
+        processors: list[Processor] | None = None,
+        participant: Any | None = None,
     ) -> LLMResponseEvent[Any]:
         """
         simple_response is a standardized way (across openai, claude, gemini etc.) to create a response.
@@ -198,9 +199,9 @@ class GeminiLLM(LLM):
         iterator: AsyncIterator[
             GenerateContentResponse
         ] = await self.chat.send_message_stream(*args, **kwargs)
-        text_parts: List[str] = []
+        text_parts: list[str] = []
         final_chunk = None
-        pending_calls: List[NormalizedToolCallItem] = []
+        pending_calls: list[NormalizedToolCallItem] = []
 
         # Gemini API does not have an item_id, we create it here and add it to all events
         item_id = str(uuid.uuid4())
@@ -272,7 +273,7 @@ class GeminiLLM(LLM):
                 follow_up_iter: AsyncIterator[
                     GenerateContentResponse
                 ] = await self.chat.send_message_stream(parts, config=cfg_with_tools)  # type: ignore[arg-type]
-                follow_up_text_parts: List[str] = []
+                follow_up_text_parts: list[str] = []
                 follow_up_last = None
                 next_calls = []
                 follow_up_idx = 0
@@ -315,14 +316,14 @@ class GeminiLLM(LLM):
         return llm_response
 
     @staticmethod
-    def _normalize_message(gemini_input) -> List["Message"]:
+    def _normalize_message(gemini_input) -> list["Message"]:
         from vision_agents.core.agents.conversation import Message
 
         # standardize on input
         if isinstance(gemini_input, str):
             gemini_input = [gemini_input]
 
-        if not isinstance(gemini_input, List):
+        if not isinstance(gemini_input, list):
             gemini_input = [gemini_input]
 
         messages = []
@@ -335,10 +336,10 @@ class GeminiLLM(LLM):
     def _standardize_and_emit_event(
         self,
         chunk: GenerateContentResponse,
-        text_parts: List[str],
+        text_parts: list[str],
         item_id: str,
         idx: int,
-    ) -> Optional[LLMResponseEvent[Any]]:
+    ) -> LLMResponseEvent[Any] | None:
         """
         Forwards the events and also send out a standardized version (the agent class hooks into that)
         """
@@ -362,8 +363,8 @@ class GeminiLLM(LLM):
         return None
 
     def _convert_tools_to_provider_format(
-        self, tools: List[ToolSchema]
-    ) -> List[Dict[str, Any]]:
+        self, tools: list[ToolSchema]
+    ) -> list[dict[str, Any]]:
         """
         Convert ToolSchema objects to Gemini format.
         Args:
@@ -386,7 +387,7 @@ class GeminiLLM(LLM):
 
     def _extract_tool_calls_from_response(
         self, response: Any
-    ) -> List[NormalizedToolCallItem]:
+    ) -> list[NormalizedToolCallItem]:
         """
         Extract tool calls from Gemini response.
 
@@ -396,7 +397,7 @@ class GeminiLLM(LLM):
         Returns:
             List of normalized tool call items with thought signatures for Gemini 3
         """
-        calls: List[NormalizedToolCallItem] = []
+        calls: list[NormalizedToolCallItem] = []
 
         try:
             # We must iterate through candidates to get the thought_signature
@@ -424,7 +425,7 @@ class GeminiLLM(LLM):
 
     def _extract_tool_calls_from_stream_chunk(
         self, chunk: Any
-    ) -> List[NormalizedToolCallItem]:
+    ) -> list[NormalizedToolCallItem]:
         """
         Extract tool calls from Gemini streaming chunk.
 
@@ -442,7 +443,7 @@ class GeminiLLM(LLM):
             return []  # Ignore extraction errors
 
     def _create_tool_result_parts(
-        self, tool_calls: List[NormalizedToolCallItem], results: List[Any]
+        self, tool_calls: list[NormalizedToolCallItem], results: list[Any]
     ):
         """
         Create function_response parts for Gemini.

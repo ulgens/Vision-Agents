@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict, Any
+from typing import Any
 import cv2
 import numpy as np
 import torch
@@ -12,8 +12,8 @@ def handle_device():
 
 
 def parse_detection_bbox(
-    obj: Dict, object_type: str, conf_threshold: float
-) -> Optional[Dict]:
+    obj: dict, object_type: str, conf_threshold: float
+) -> dict | None:
     confidence = obj.get("confidence", 1.0)
 
     # Filter by confidence threshold
@@ -30,7 +30,7 @@ def parse_detection_bbox(
     return {"label": object_type, "bbox": bbox, "confidence": confidence}
 
 
-def normalize_bbox_coordinates(bbox: List[float], width: int, height: int) -> tuple:
+def normalize_bbox_coordinates(bbox: list[float], width: int, height: int) -> tuple:
     if len(bbox) != 4:
         return (0, 0, 0, 0)
 
@@ -47,7 +47,7 @@ def normalize_bbox_coordinates(bbox: List[float], width: int, height: int) -> tu
 
 def annotate_detections(
     frame_array: np.ndarray,
-    results: Dict[str, Any],
+    results: dict[str, Any],
     font: int = cv2.FONT_HERSHEY_SIMPLEX,
     font_scale: float = 0.5,
     font_thickness: int = 2,

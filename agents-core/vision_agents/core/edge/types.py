@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import (
     Any,
-    Optional,
     Protocol,
     runtime_checkable,
 )
@@ -13,9 +12,9 @@ from pyee.asyncio import AsyncIOEventEmitter
 
 @dataclass
 class User:
-    id: Optional[str] = ""
-    name: Optional[str] = ""
-    image: Optional[str] = ""
+    id: str | None = ""
+    name: str | None = ""
+    image: str | None = ""
 
 
 @dataclass

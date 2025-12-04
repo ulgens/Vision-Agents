@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Any
+from typing import Any
 
 from dotenv import load_dotenv
 
@@ -45,7 +45,7 @@ async def create_agent(**kwargs) -> Agent:
 
     # MCP and function calling are supported. see https://visionagents.ai/guides/mcp-tool-calling
     @llm.register_function(description="Get current weather for a location")
-    async def get_weather(location: str) -> Dict[str, Any]:
+    async def get_weather(location: str) -> dict[str, Any]:
         return await get_weather_by_location(location)
 
     return agent

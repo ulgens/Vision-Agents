@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from vision_agents.core.events import PluginBaseEvent
-from typing import Optional, Any
+from typing import Any
 
 
 @dataclass
@@ -8,4 +8,4 @@ class AWSStreamEvent(PluginBaseEvent):
     """Event emitted when AWS provides a stream event."""
 
     type: str = field(default="plugin.aws.stream", init=False)
-    event_data: Optional[Any] = None
+    event_data: Any | None = None

@@ -2,7 +2,7 @@ import asyncio
 import os
 import time
 from dataclasses import dataclass
-from typing import Optional, Any
+from typing import Any
 
 from getstream.video.rtc.track_util import PcmData, AudioFormat
 import numpy as np
@@ -69,7 +69,7 @@ class SmartTurnDetection(TurnDetector):
         speech_probability_threshold: float = 0.5,
         pre_speech_buffer_ms: int = 200,
         silence_duration_ms: int = 3000,
-        options: Optional[AgentOptions] = None,
+        options: AgentOptions | None = None,
     ):
         """
         Initialize Smart Turn Detection.
@@ -96,14 +96,14 @@ class SmartTurnDetection(TurnDetector):
         self._pre_speech_buffer = PcmData(
             sample_rate=RATE, channels=1, format=AudioFormat.F32
         )
-        self._active_segment: Optional[PcmData] = None
+        self._active_segment: PcmData | None = None
         self._turn_in_progress = False
         self._trailing_silence_ms = 2000
         self._tail_silence_ms = 0.0
 
         # Producer-consumer pattern: audio packets go into buffer, background task processes them
         self._audio_queue: asyncio.Queue[Any] = asyncio.Queue()
-        self._processing_task: Optional[asyncio.Task[Any]] = None
+        self._processing_task: asyncio.Task[Any] | None = None
         self._shutdown_event = asyncio.Event()
         self._processing_active = (
             asyncio.Event()
@@ -146,7 +146,7 @@ class SmartTurnDetection(TurnDetector):
         self,
         audio_data: PcmData,
         participant: Participant,
-        conversation: Optional[Conversation],
+        conversation: Conversation | None,
     ) -> None:
         """
         Fast, non-blocking audio packet enqueueing.

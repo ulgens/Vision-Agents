@@ -4,7 +4,7 @@ import copy
 import logging
 from asyncio import CancelledError
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Optional, cast
+from typing import Any, cast
 
 import aiortc
 import av
@@ -118,10 +118,10 @@ class GeminiRealtime(realtime.Realtime):
     def __init__(
         self,
         model: str = DEFAULT_MODEL,
-        config: Optional[LiveConnectConfigDict] = None,
-        http_options: Optional[HttpOptions] = None,
-        client: Optional[genai.Client] = None,
-        api_key: Optional[str] = None,
+        config: LiveConnectConfigDict | None = None,
+        http_options: HttpOptions | None = None,
+        client: genai.Client | None = None,
+        api_key: str | None = None,
         **kwargs,
     ) -> None:
         super().__init__(**kwargs)
@@ -142,10 +142,10 @@ class GeminiRealtime(realtime.Realtime):
         if config:
             self._base_config.update(config)
 
-        self._session_resumption_id: Optional[str] = None
-        self._video_forwarder: Optional[VideoForwarder] = None
-        self._real_session: Optional[AsyncSession] = None
-        self._processing_task: Optional[asyncio.Task] = None
+        self._session_resumption_id: str | None = None
+        self._video_forwarder: VideoForwarder | None = None
+        self._real_session: AsyncSession | None = None
+        self._processing_task: asyncio.Task | None = None
         self._exit_stack = contextlib.AsyncExitStack()
         self._executor = ThreadPoolExecutor(max_workers=1)
 
@@ -158,8 +158,8 @@ class GeminiRealtime(realtime.Realtime):
     async def simple_response(
         self,
         text: str,
-        processors: Optional[list[Processor]] = None,
-        participant: Optional[Participant] = None,
+        processors: list[Processor] | None = None,
+        participant: Participant | None = None,
     ) -> LLMResponseEvent[Any]:
         """
         Simple response standardizes how to send a text instruction to this LLM.
@@ -179,7 +179,7 @@ class GeminiRealtime(realtime.Realtime):
             return LLMResponseEvent(text="", original=None, exception=e)
 
     async def simple_audio_response(
-        self, pcm: PcmData, participant: Optional[Participant] = None
+        self, pcm: PcmData, participant: Participant | None = None
     ):
         """
         Simple audio response standardizes how to send audio to the LLM
@@ -210,7 +210,7 @@ class GeminiRealtime(realtime.Realtime):
     async def watch_video_track(
         self,
         track: aiortc.mediastreams.MediaStreamTrack,
-        shared_forwarder: Optional[VideoForwarder] = None,
+        shared_forwarder: VideoForwarder | None = None,
     ) -> None:
         """
         Start sending video frames to Gemini using VideoForwarder.

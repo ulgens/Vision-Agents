@@ -1,6 +1,5 @@
 import asyncio
 import logging
-from typing import Optional
 
 import av
 from PIL import Image
@@ -38,7 +37,7 @@ class DecartVideoTrack(VideoStreamTrack):
         self.last_frame: av.VideoFrame = self.placeholder_frame
 
         self._stopped = False
-        self._source_track: Optional[MediaStreamTrack] = None
+        self._source_track: MediaStreamTrack | None = None
 
         logger.debug(f"DecartVideoTrack initialized ({width}x{height})")
 

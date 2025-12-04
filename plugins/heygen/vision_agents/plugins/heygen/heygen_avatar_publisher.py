@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import Optional, Any, Tuple
+from typing import Any
 
 from getstream.video.rtc import audio_track
 from getstream.video.rtc.track_util import PcmData
@@ -48,8 +48,8 @@ class AvatarPublisher(AudioVideoProcessor, VideoPublisherMixin, AudioPublisherMi
         self,
         avatar_id: str = "default",
         quality: VideoQuality = VideoQuality.HIGH,
-        resolution: Tuple[int, int] = (1920, 1080),
-        api_key: Optional[str] = None,
+        resolution: tuple[int, int] = (1920, 1080),
+        api_key: str | None = None,
         interval: int = 0,
         **kwargs,
     ):
@@ -96,12 +96,12 @@ class AvatarPublisher(AudioVideoProcessor, VideoPublisherMixin, AudioPublisherMi
 
         # Connection state
         self._connected = False
-        self._connection_task: Optional[asyncio.Task] = None
+        self._connection_task: asyncio.Task | None = None
         self._agent = None  # Will be set by the agent
 
         # Text buffer for accumulating LLM response chunks before sending to HeyGen
         self._text_buffer = ""
-        self._current_response_id: Optional[str] = None
+        self._current_response_id: str | None = None
         self._all_sent_texts: set = set()  # Track all sent texts to prevent duplicates
 
         logger.info(
@@ -313,7 +313,7 @@ class AvatarPublisher(AudioVideoProcessor, VideoPublisherMixin, AudioPublisherMi
         except Exception as e:
             logger.error(f"Error in audio forwarding loop: {e}", exc_info=True)
 
-    async def _on_text_chunk(self, text_delta: str, item_id: Optional[str]) -> None:
+    async def _on_text_chunk(self, text_delta: str, item_id: str | None) -> None:
         """Handle text chunk from the LLM.
 
         Accumulates text chunks. Does NOT send immediately - waits for completion event

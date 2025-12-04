@@ -1,6 +1,7 @@
 import asyncio
 import json
-from typing import Any, Optional, Callable, cast, Literal
+from typing import Any, cast, Literal
+from collections.abc import Callable
 
 import av
 from aiortc import (
@@ -51,19 +52,19 @@ class RTCManager:
         self.client = client
         self.send_video = send_video
         self.pc = RTCPeerConnection()
-        self.data_channel: Optional[RTCDataChannel] = None
+        self.data_channel: RTCDataChannel | None = None
 
         # tracks for sharing audio & video
         self._audio_to_openai_track: QueuedAudioTrack = QueuedAudioTrack(
             sample_rate=48000
         )
         self._video_to_openai_track: QueuedVideoTrack = QueuedVideoTrack()
-        self._video_sender: Optional[RTCRtpSender] = None
+        self._video_sender: RTCRtpSender | None = None
 
         # Set up connection event handlers
         self._setup_connection_logging()
-        self._audio_callback: Optional[Callable[[PcmData], Any]] = None
-        self._event_callback: Optional[Callable[[dict], Any]] = None
+        self._audio_callback: Callable[[PcmData], Any] | None = None
+        self._event_callback: Callable[[dict], Any] | None = None
         self._data_channel_open_event: asyncio.Event = asyncio.Event()
         self._current_video_forwarder = None
 
@@ -261,7 +262,7 @@ class RTCManager:
         if self._video_to_openai_track:
             await self._video_to_openai_track.add_frame(frame)
 
-    async def _exchange_sdp(self, local_sdp: str) -> Optional[str]:
+    async def _exchange_sdp(self, local_sdp: str) -> str | None:
         """Exchange SDP with OpenAI using the realtime calls API."""
         logger.debug(f"Creating realtime call with SDP length: {len(local_sdp)} bytes")
 

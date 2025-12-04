@@ -2,7 +2,7 @@ import asyncio
 import logging
 import os
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 import aiortc
 import av
@@ -65,13 +65,13 @@ class LocalDetectionProcessor(
     def __init__(
         self,
         conf_threshold: float = 0.3,
-        detect_objects: Union[str, List[str]] = "person",
+        detect_objects: str | list[str] = "person",
         fps: int = 30,
         interval: int = 0,
         max_workers: int = 10,
         force_cpu: bool = False,
         model_name: str = "moondream/moondream3-preview",
-        options: Optional[AgentOptions] = None,
+        options: AgentOptions | None = None,
     ):
         super().__init__(interval=interval, receive_audio=False, receive_video=True)
 
@@ -90,9 +90,9 @@ class LocalDetectionProcessor(
         else:
             self._device, self._dtype = handle_device()
 
-        self._last_results: Dict[str, Any] = {}
-        self._last_frame_time: Optional[float] = None
-        self._last_frame_pil: Optional[Image.Image] = None
+        self._last_results: dict[str, Any] = {}
+        self._last_frame_time: float | None = None
+        self._last_frame_pil: Image.Image | None = None
 
         # Font configuration constants for drawing efficiency
         self._font = cv2.FONT_HERSHEY_SIMPLEX
@@ -115,7 +115,7 @@ class LocalDetectionProcessor(
 
         # Video track for publishing (if used as video publisher)
         self._video_track: MoondreamVideoTrack = MoondreamVideoTrack()
-        self._video_forwarder: Optional[VideoForwarder] = None
+        self._video_forwarder: VideoForwarder | None = None
 
         # Model will be loaded in start() method
         self.model = None
@@ -157,7 +157,7 @@ class LocalDetectionProcessor(
                     "Set HF_TOKEN or run 'huggingface-cli login'"
                 )
 
-            load_kwargs: Dict[str, Any] = {}
+            load_kwargs: dict[str, Any] = {}
             # Add token if available (transformers will use env var automatically, but explicit is clearer)
             if hf_token:
                 load_kwargs["token"] = hf_token
@@ -252,7 +252,7 @@ class LocalDetectionProcessor(
         logger.info("📹 publish_video_track called")
         return self._video_track
 
-    async def _run_inference(self, frame_array: np.ndarray) -> Dict[str, Any]:
+    async def _run_inference(self, frame_array: np.ndarray) -> dict[str, Any]:
         try:
             # Convert frame to PIL Image
             image = Image.fromarray(frame_array)
@@ -269,7 +269,7 @@ class LocalDetectionProcessor(
             logger.exception(f"❌ Local inference failed: {e}")
             return {}
 
-    def _run_detection_sync(self, image: Image.Image) -> List[Dict]:
+    def _run_detection_sync(self, image: Image.Image) -> list[dict]:
         if self._shutdown or self.model is None:
             return []
 

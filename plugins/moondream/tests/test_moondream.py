@@ -16,7 +16,7 @@ import os
 import pytest
 import av
 import numpy as np
-from typing import Dict, Any
+from typing import Any
 from PIL import Image
 
 from vision_agents.plugins.moondream import (
@@ -195,7 +195,7 @@ def test_annotate_detections_empty_results(sample_image):
     processor = CloudDetectionProcessor(api_key="test_key")
 
     frame_array = np.array(sample_image)
-    mock_results: Dict[str, Any] = {"detections": []}
+    mock_results: dict[str, Any] = {"detections": []}
 
     # Call annotate_detections directly with styling parameters
     annotated = annotate_detections(

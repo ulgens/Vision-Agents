@@ -95,7 +95,7 @@ More text after."""
     def test_very_large_code_block_split(self, conversation):
         """Test that code blocks larger than max_size are split at newlines."""
         # Create a code block that's too large
-        code_lines = ["def function_{}():".format(i) for i in range(20)]
+        code_lines = [f"def function_{i}():" for i in range(20)]
         text = "```python\n" + "\n".join(code_lines) + "\n```"
 
         chunks = conversation._smart_chunk(text, 80)

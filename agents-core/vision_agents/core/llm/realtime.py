@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-from typing import (
-    Optional,
-)
 
 from getstream.video.rtc.track_util import PcmData
 from vision_agents.core.edge.types import Participant
@@ -50,14 +47,14 @@ class Realtime(OmniLLM):
         self.session_id = str(uuid.uuid4())
         self.fps = fps
         # Store current participant for user speech transcription events
-        self._current_participant: Optional[Participant] = None
+        self._current_participant: Participant | None = None
 
     @abc.abstractmethod
     async def connect(self): ...
 
     @abc.abstractmethod
     async def simple_audio_response(
-        self, pcm: PcmData, participant: Optional[Participant] = None
+        self, pcm: PcmData, participant: Participant | None = None
     ): ...
 
     async def _stop_watching_video_track(self) -> None:

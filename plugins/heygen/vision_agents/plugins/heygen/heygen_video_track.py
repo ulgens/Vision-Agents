@@ -1,6 +1,5 @@
 import asyncio
 import logging
-from typing import Optional
 
 import av
 from aiortc import MediaStreamTrack, VideoStreamTrack
@@ -40,8 +39,8 @@ class HeyGenVideoTrack(VideoStreamTrack):
         self.last_frame: av.VideoFrame = self.placeholder_frame
 
         self._stopped = False
-        self._receiving_task: Optional[asyncio.Task] = None
-        self._source_track: Optional[MediaStreamTrack] = None
+        self._receiving_task: asyncio.Task | None = None
+        self._source_track: MediaStreamTrack | None = None
 
         logger.info(f"HeyGenVideoTrack initialized ({width}x{height})")
 

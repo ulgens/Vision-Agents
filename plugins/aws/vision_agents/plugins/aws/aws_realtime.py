@@ -3,7 +3,7 @@ import base64
 import json
 import logging
 import uuid
-from typing import Optional, List, Dict, Any
+from typing import Any
 
 import aiortc
 from getstream.video.rtc.audio_track import AudioStreamTrack
@@ -165,12 +165,12 @@ class Realtime(realtime.Realtime):
             sample_rate=24000, channels=1, format="s16"
         )
 
-        self._stream_task: Optional[asyncio.Task[Any]] = None
+        self._stream_task: asyncio.Task[Any] | None = None
         self._is_connected = False
-        self._message_queue: asyncio.Queue[Dict[str, Any]] = asyncio.Queue()
-        self._conversation_messages: List[Dict[str, Any]] = []
-        self._pending_tool_calls: Dict[
-            str, Dict[str, Any]
+        self._message_queue: asyncio.Queue[dict[str, Any]] = asyncio.Queue()
+        self._conversation_messages: list[dict[str, Any]] = []
+        self._pending_tool_calls: dict[
+            str, dict[str, Any]
         ] = {}  # Store tool calls until contentEnd: key=toolUseId
 
         # Audio streaming configuration
@@ -183,7 +183,7 @@ class Realtime(realtime.Realtime):
     async def watch_video_track(
         self,
         track: aiortc.mediastreams.MediaStreamTrack,
-        shared_forwarder: Optional[VideoForwarder] = None,
+        shared_forwarder: VideoForwarder | None = None,
     ) -> None:
         # No video support for now.
         return None
@@ -243,7 +243,7 @@ class Realtime(realtime.Realtime):
             raise
 
     async def simple_audio_response(
-        self, pcm: PcmData, participant: Optional[Participant] = None
+        self, pcm: PcmData, participant: Participant | None = None
     ):
         """Send audio data to the model for processing."""
         if not self.connected:
@@ -269,8 +269,8 @@ class Realtime(realtime.Realtime):
     async def simple_response(
         self,
         text: str,
-        processors: Optional[List[Processor]] = None,
-        participant: Optional[Participant] = None,
+        processors: list[Processor] | None = None,
+        participant: Participant | None = None,
     ):
         """
         Simple response standardizes how to send a text instruction to this LLM.
@@ -424,7 +424,7 @@ class Realtime(realtime.Realtime):
         event_json = self.CONTENT_END_EVENT % (self.session_id, content_name)
         await self.send_raw_event(event_json)
 
-    async def send_event(self, event_data: Dict[str, Any]) -> None:
+    async def send_event(self, event_data: dict[str, Any]) -> None:
         try:
             event_json = json.dumps(event_data)
             event = InvokeModelWithBidirectionalStreamInputChunk(
@@ -447,8 +447,8 @@ class Realtime(realtime.Realtime):
             # Don't raise the exception, just log it to prevent connection reset
 
     def _convert_tools_to_provider_format(
-        self, tools: List[Any]
-    ) -> List[Dict[str, Any]]:
+        self, tools: list[Any]
+    ) -> list[dict[str, Any]]:
         """Convert ToolSchema objects to AWS Nova Realtime format.
 
         Args:
@@ -551,7 +551,7 @@ class Realtime(realtime.Realtime):
         await self.send_event(event)
 
     async def _handle_tool_call(
-        self, tool_name: str, tool_use_id: str, tool_use_content: Dict[str, Any]
+        self, tool_name: str, tool_use_id: str, tool_use_content: dict[str, Any]
     ):
         """Handle tool call from AWS Bedrock.
 
@@ -630,7 +630,7 @@ class Realtime(realtime.Realtime):
         }
         await self.send_event(prompt_end)
 
-        session_end: Dict[str, Any] = {"event": {"sessionEnd": {}}}
+        session_end: dict[str, Any] = {"event": {"sessionEnd": {}}}
         await self.send_event(session_end)
 
         await self.stream.input_stream.close()

@@ -4,7 +4,7 @@ import collections
 import logging
 import types
 import typing
-from typing import Any, Deque, Dict, Optional, Union, get_args, get_origin
+from typing import Any, Deque, Union, get_args, get_origin
 
 from .base import (
     ConnectionClosedEvent,
@@ -134,14 +134,14 @@ class EventManager:
                 Defaults to True.
         """
         self._queue: Deque[Any] = collections.deque([])
-        self._events: Dict[str, type] = {}
-        self._handlers: Dict[type, typing.List[typing.Callable]] = {}
-        self._modules: Dict[str, typing.List[type]] = {}
+        self._events: dict[str, type] = {}
+        self._handlers: dict[type, list[typing.Callable]] = {}
+        self._modules: dict[str, list[type]] = {}
         self._ignore_unknown_events = ignore_unknown_events
-        self._processing_task: Optional[asyncio.Task[Any]] = None
+        self._processing_task: asyncio.Task[Any] | None = None
         self._shutdown = False
         self._silent_events: set[type] = set()
-        self._handler_tasks: Dict[uuid.UUID, asyncio.Task[Any]] = {}
+        self._handler_tasks: dict[uuid.UUID, asyncio.Task[Any]] = {}
         self._received_event = asyncio.Event()
 
         self.register(ExceptionEvent)
@@ -340,7 +340,7 @@ class EventManager:
 
         for name, event_class in annotations.items():
             origin = get_origin(event_class)
-            events: typing.List[type] = []
+            events: list[type] = []
 
             if origin is Union or isinstance(event_class, types.UnionType):
                 events = list(get_args(event_class))
@@ -526,11 +526,11 @@ class EventManager:
             elif cancelled_exc:
                 raise cancelled_exc
             else:
-                cleanup_ids = set(
+                cleanup_ids = {
                     task_id
                     for task_id, task in self._handler_tasks.items()
                     if task.done()
-                )
+                }
                 for task_id in cleanup_ids:
                     self._handler_tasks.pop(task_id)
 

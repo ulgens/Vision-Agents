@@ -1,6 +1,7 @@
 import asyncio
 import logging
-from typing import Optional, Callable, Any, cast
+from typing import Any, cast
+from collections.abc import Callable
 
 import av
 from getstream.video.rtc.audio_track import AudioStreamTrack
@@ -25,7 +26,7 @@ class AudioForwarder:
         """
         self.track = track
         self._callback = callback
-        self._task: Optional[asyncio.Task] = None
+        self._task: asyncio.Task | None = None
 
     async def start(self) -> None:
         """Start forwarding audio frames to the callback."""

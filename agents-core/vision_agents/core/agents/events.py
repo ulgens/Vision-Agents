@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from vision_agents.core.events import PluginBaseEvent, BaseEvent
-from typing import Optional, Any, Dict
+from typing import Any
 
 
 @dataclass
@@ -23,8 +23,8 @@ class AgentSayEvent(PluginBaseEvent):
 
     type: str = field(default="agent.say", init=False)
     text: str = ""
-    user_id: Optional[str] = None  # type: ignore[assignment]
-    metadata: Optional[Dict[str, Any]] = None
+    user_id: str | None = None  # type: ignore[assignment]
+    metadata: dict[str, Any] | None = None
 
     def __post_init__(self):
         if not self.text:
@@ -37,8 +37,8 @@ class AgentSayStartedEvent(PluginBaseEvent):
 
     type: str = field(default="agent.say_started", init=False)
     text: str = ""
-    user_id: Optional[str] = None  # type: ignore[assignment]
-    synthesis_id: Optional[str] = None
+    user_id: str | None = None  # type: ignore[assignment]
+    synthesis_id: str | None = None
 
 
 @dataclass
@@ -47,9 +47,9 @@ class AgentSayCompletedEvent(PluginBaseEvent):
 
     type: str = field(default="agent.say_completed", init=False)
     text: str = ""
-    user_id: Optional[str] = None  # type: ignore[assignment]
-    synthesis_id: Optional[str] = None
-    duration_ms: Optional[float] = None
+    user_id: str | None = None  # type: ignore[assignment]
+    synthesis_id: str | None = None
+    duration_ms: float | None = None
 
 
 @dataclass
@@ -58,8 +58,8 @@ class AgentSayErrorEvent(PluginBaseEvent):
 
     type: str = field(default="agent.say_error", init=False)
     text: str = ""
-    user_id: Optional[str] = None  # type: ignore[assignment]
-    error: Optional[Exception] = None
+    user_id: str | None = None  # type: ignore[assignment]
+    error: Exception | None = None
 
     @property
     def error_message(self) -> str:

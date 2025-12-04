@@ -4,7 +4,7 @@ Abstraction for stream vs other services here
 
 import abc
 
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 import aiortc
 from pyee.asyncio import AsyncIOEventEmitter
@@ -57,5 +57,5 @@ class EdgeTransport(AsyncIOEventEmitter, abc.ABC):
     @abc.abstractmethod
     def add_track_subscriber(
         self, track_id: str
-    ) -> Optional[aiortc.mediastreams.MediaStreamTrack]:
+    ) -> aiortc.mediastreams.MediaStreamTrack | None:
         pass
