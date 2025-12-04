@@ -18,17 +18,12 @@ repos:
   -   id: check-added-large-files
       args: ["--maxkb=6000"]
 
-- repo: local
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: v1.19.0
   hooks:
-    - id: mypy-main
+    - id: mypy
       name: mypy (vision_agents)
-      entry: uv run --frozen mypy --install-types --non-interactive agents-core/vision_agents
-      language: system
-      pass_filenames: false
-      types_or: [python]
-    - id: mypy-plugins
+      args: [--install-types, --non-interactive, "agents-core/vision_agents"]
+    - id: mypy
       name: mypy (plugins)
-      entry: uv run --frozen mypy --install-types --non-interactive --exclude 'plugins/.*/tests/.*' plugins
-      language: system
-      pass_filenames: false
-      types_or: [python]
+      args: [--install-types, --non-interactive, --exclude, "plugins/.*/tests/.*", plugins]
