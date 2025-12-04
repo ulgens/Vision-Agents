@@ -8,9 +8,6 @@ SFU. Run this script whenever the upstream protobuf schema changes.
 from __future__ import annotations
 
 import pathlib
-from typing import (
-    Dict as TypingDict,
-)
 from collections.abc import Iterable, Sequence
 
 from google.protobuf.descriptor import FieldDescriptor
@@ -58,9 +55,9 @@ def _class_name(proto_name: str) -> str:
     return proto_name if proto_name.endswith("Event") else proto_name + "Event"
 
 
-def _collect_message_types() -> TypingDict[str, type[Message]]:
+def _collect_message_types() -> dict[str, type[Message]]:
     """Collect all message types referenced in event fields (recursively)."""
-    message_types: TypingDict[str, type[Message]] = {}
+    message_types: dict[str, type[Message]] = {}
     to_process: set[str] = set()
 
     # Collect all message types from events
