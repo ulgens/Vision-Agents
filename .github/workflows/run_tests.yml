@@ -16,43 +16,12 @@ env:
   UV_FROZEN: "1"
 
 jobs:
-  ruff:
-    name: Ruff
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-      - name: Install dependencies
-        uses: ./.github/actions/python-uv-setup
-      - name: Run Ruff linter
-        run: uv run ruff check .
-      - name: Run Ruff formatter
-        run: uv run ruff format --check .
-
-  mypy:
-    name: Mypy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-      - name: Install dependencies
-        uses: ./.github/actions/python-uv-setup
-      # Restore mypy cache to speed up the run
-      - name: Restore mypy cache
-        uses: actions/cache/restore@v4
-        with:
-          path: .mypy_cache
-          key: mypy-cache-${{ hashFiles('pyproject.toml') }}
-      - name: Run mypy for core
-        run: uv run mypy --install-types --non-interactive agents-core/vision_agents
-      - name: Run mypy for plugins
-        run: uv run mypy --install-types --non-interactive --exclude 'plugins/.*/tests/.*' plugins
-      # Save the updated mypy cache
-      - name: Save mypy cache
-        uses: actions/cache/save@v4
-        with:
-          path: .mypy_cache
-          key: mypy-cache-${{ hashFiles('pyproject.toml') }}
+      - uses: actions/checkout@v5
+      - uses: j178/prek-action@v1
 
   test:
     name: Test "${{ inputs.marker }}"
