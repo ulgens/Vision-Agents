@@ -17,7 +17,6 @@ repos:
   -   id: check-added-large-files
       args: ["--maxkb=6000"]
 
-# Match GitHub checks: mypy for main package and plugins
 - repo: local
   hooks:
     - id: mypy-main
