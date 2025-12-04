@@ -7,7 +7,7 @@ import numpy as np
 import cv2
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
-from typing import Optional, Dict, Any
+from typing import Any
 from PIL import Image
 import av
 from numpy import ndarray
@@ -84,8 +84,8 @@ class YOLOPoseProcessor(AudioVideoProcessor, VideoProcessorMixin, VideoPublisher
         self.device = device
         self.enable_hand_tracking = enable_hand_tracking
         self.enable_wrist_highlights = enable_wrist_highlights
-        self._last_frame: Optional[Image.Image] = None
-        self._video_forwarder: Optional[VideoForwarder] = None
+        self._last_frame: Image.Image | None = None
+        self._video_forwarder: VideoForwarder | None = None
 
         # Initialize YOLO model
         self._load_model()
@@ -137,7 +137,7 @@ class YOLOPoseProcessor(AudioVideoProcessor, VideoProcessorMixin, VideoPublisher
         else:
             await self._video_track.add_frame(frame_with_pose)
 
-    async def add_pose_to_frame(self, frame: av.VideoFrame) -> Optional[av.VideoFrame]:
+    async def add_pose_to_frame(self, frame: av.VideoFrame) -> av.VideoFrame | None:
         try:
             frame_array = frame.to_ndarray(format="rgb24")
             array_with_pose, pose = await self.add_pose_to_ndarray(frame_array)
@@ -175,7 +175,7 @@ class YOLOPoseProcessor(AudioVideoProcessor, VideoProcessorMixin, VideoPublisher
 
     async def _process_pose_async(
         self, frame_array: np.ndarray
-    ) -> tuple[np.ndarray, Dict[str, Any]]:
+    ) -> tuple[np.ndarray, dict[str, Any]]:
         """
         Async wrapper for pose processing.
 
@@ -219,7 +219,7 @@ class YOLOPoseProcessor(AudioVideoProcessor, VideoProcessorMixin, VideoPublisher
 
     def _process_pose_sync(
         self, frame_array: np.ndarray
-    ) -> tuple[np.ndarray, Dict[str, Any]]:
+    ) -> tuple[np.ndarray, dict[str, Any]]:
         try:
             if self._shutdown:
                 logger.debug("🛑 Pose processing skipped - processor shutdown")
@@ -249,7 +249,7 @@ class YOLOPoseProcessor(AudioVideoProcessor, VideoProcessorMixin, VideoPublisher
 
             # Apply pose results to current frame
             annotated_frame = frame_array.copy()
-            pose_data: Dict[str, Any] = {"persons": []}
+            pose_data: dict[str, Any] = {"persons": []}
 
             # Process each detected person
             for person_idx, result in enumerate(pose_results):

@@ -2,7 +2,7 @@ import asyncio
 import os
 import time
 from dataclasses import dataclass
-from typing import Optional, Any
+from typing import Any
 
 from getstream.video.rtc.track_util import PcmData, AudioFormat
 from vogent_turn import TurnDetector as VogentDetector
@@ -91,16 +91,16 @@ class VogentTurnDetection(TurnDetector):
         self._pre_speech_buffer = PcmData(
             sample_rate=RATE, channels=1, format=AudioFormat.F32
         )
-        self._active_segment: Optional[PcmData] = None
+        self._active_segment: PcmData | None = None
         self._trailing_silence_ms = self.silence_duration_ms
 
         # Producer-consumer pattern: audio packets go into buffer, background task processes them
         self._audio_queue: asyncio.Queue[Any] = asyncio.Queue()
-        self._processing_task: Optional[asyncio.Task[Any]] = None
+        self._processing_task: asyncio.Task[Any] | None = None
         self._shutdown_event = asyncio.Event()
 
         # Model instances (initialized in start())
-        self.vad: Optional[SileroVAD] = None
+        self.vad: SileroVAD | None = None
         self.whisper_stt = fast_whisper.STT(
             model_size=whisper_model_size,
             device="cpu",
@@ -157,7 +157,7 @@ class VogentTurnDetection(TurnDetector):
         self,
         audio_data: PcmData,
         participant: Participant,
-        conversation: Optional[Conversation],
+        conversation: Conversation | None,
     ) -> None:
         """
         Fast, non-blocking audio packet enqueueing.
@@ -191,7 +191,7 @@ class VogentTurnDetection(TurnDetector):
         self,
         audio_data: PcmData,
         participant: Participant,
-        conversation: Optional[Conversation],
+        conversation: Conversation | None,
     ) -> None:
         """
         Process audio packet through VAD -> Whisper -> Vogent pipeline.
@@ -406,7 +406,7 @@ class VogentTurnDetection(TurnDetector):
 
         return is_complete, confidence
 
-    def _get_previous_line(self, conversation: Optional[Conversation]) -> str:
+    def _get_previous_line(self, conversation: Conversation | None) -> str:
         """
         Extract the previous speaker's line from conversation history.
 

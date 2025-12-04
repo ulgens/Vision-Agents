@@ -1,5 +1,5 @@
 import json
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any
 
 from getstream.video.rtc.pb.stream.video.sfu.models.models_pb2 import Participant
 from openai import AsyncOpenAI
@@ -54,9 +54,9 @@ class OpenAILLM(LLM):
     def __init__(
         self,
         model: str,
-        api_key: Optional[str] = None,
-        base_url: Optional[str] = None,
-        client: Optional[AsyncOpenAI] = None,
+        api_key: str | None = None,
+        base_url: str | None = None,
+        client: AsyncOpenAI | None = None,
         max_tool_rounds: int = 3,
     ):
         """
@@ -73,7 +73,7 @@ class OpenAILLM(LLM):
         self.events.register_events_from_module(events)
         self.model = model
         self.max_tool_rounds = max_tool_rounds
-        self.openai_conversation: Optional[Any] = None
+        self.openai_conversation: Any | None = None
         self.conversation = None
 
         if client is not None:
@@ -86,7 +86,7 @@ class OpenAILLM(LLM):
     async def simple_response(
         self,
         text: str,
-        processors: Optional[List[Processor]] = None,
+        processors: list[Processor] | None = None,
         participant: Participant = None,
     ):
         """
@@ -149,7 +149,7 @@ class OpenAILLM(LLM):
         # OpenAI Responses API only accepts keyword arguments
         response = await self.client.responses.create(**kwargs)
 
-        llm_response: Optional[LLMResponseEvent[OpenAIResponse]] = None
+        llm_response: LLMResponseEvent[OpenAIResponse] | None = None
 
         if isinstance(response, OpenAIResponse):
             # Non-streaming response
@@ -207,7 +207,7 @@ class OpenAILLM(LLM):
         return llm_response or LLMResponseEvent[OpenAIResponse](None, "")  # type: ignore[arg-type]
 
     async def _handle_tool_calls(
-        self, tool_calls: List[NormalizedToolCallItem], original_kwargs: Dict[str, Any]
+        self, tool_calls: list[NormalizedToolCallItem], original_kwargs: dict[str, Any]
     ) -> LLMResponseEvent[OpenAIResponse]:
         """Execute tool calls and get follow-up response. Supports multi-round.
 
@@ -218,7 +218,7 @@ class OpenAILLM(LLM):
         Returns:
             LLM response with tool results
         """
-        llm_response: Optional[LLMResponseEvent[OpenAIResponse]] = None
+        llm_response: LLMResponseEvent[OpenAIResponse] | None = None
         current_tool_calls = tool_calls
         seen: set[tuple[str, str]] = set()
 
@@ -277,9 +277,7 @@ class OpenAILLM(LLM):
         self,
         tool_messages: list[dict[str, Any]],
         seen: set[tuple[str, str]],
-    ) -> tuple[
-        Optional[LLMResponseEvent[OpenAIResponse]], List[NormalizedToolCallItem]
-    ]:
+    ) -> tuple[LLMResponseEvent[OpenAIResponse] | None, list[NormalizedToolCallItem]]:
         """Send tool results and get follow-up response.
 
         Returns:
@@ -288,7 +286,7 @@ class OpenAILLM(LLM):
         if not self.openai_conversation:
             return None, []
 
-        follow_up_kwargs: Dict[str, Any] = {
+        follow_up_kwargs: dict[str, Any] = {
             "model": self.model,
             "conversation": self.openai_conversation.id,
             "input": tool_messages,
@@ -310,8 +308,8 @@ class OpenAILLM(LLM):
             return llm_response, next_tool_calls
 
         # Streaming response
-        llm_response_streaming: Optional[LLMResponseEvent[OpenAIResponse]] = None
-        pending_tool_calls: List[NormalizedToolCallItem] = []
+        llm_response_streaming: LLMResponseEvent[OpenAIResponse] | None = None
+        pending_tool_calls: list[NormalizedToolCallItem] = []
 
         async for event in follow_up_response:
             llm_response_optional = self._standardize_and_emit_event(event)
@@ -329,7 +327,7 @@ class OpenAILLM(LLM):
         return llm_response_streaming, pending_tool_calls
 
     @staticmethod
-    def _normalize_message(openai_input) -> List["Message"]:
+    def _normalize_message(openai_input) -> list["Message"]:
         """
         Takes the openAI list of messages and standardizes it so we can store it in chat
         """
@@ -338,10 +336,10 @@ class OpenAILLM(LLM):
         # standardize on input
         if isinstance(openai_input, str):
             openai_input = [dict(content=openai_input, role="user", type="message")]
-        elif not isinstance(openai_input, List):
+        elif not isinstance(openai_input, list):
             openai_input = [openai_input]
 
-        messages: List[Message] = []
+        messages: list[Message] = []
         for i in openai_input:
             content = i.get("content", i if isinstance(i, str) else json.dumps(i))
             message = Message(original=i, content=content)
@@ -350,16 +348,16 @@ class OpenAILLM(LLM):
         return messages
 
     def _convert_tools_to_provider_format(
-        self, tools: List[ToolSchema]
-    ) -> List[Dict[str, Any]]:
+        self, tools: list[ToolSchema]
+    ) -> list[dict[str, Any]]:
         """Convert ToolSchema objects to OpenAI format."""
         return convert_tools_to_openai_format(tools)
 
     def _extract_tool_calls_from_response(
         self, response: OpenAIResponse
-    ) -> List[NormalizedToolCallItem]:
+    ) -> list[NormalizedToolCallItem]:
         """Extract tool calls from OpenAI response."""
-        calls: List[NormalizedToolCallItem] = []
+        calls: list[NormalizedToolCallItem] = []
         for item in response.output or []:
             if isinstance(item, ResponseFunctionToolCall):
                 calls.append(
@@ -373,8 +371,8 @@ class OpenAILLM(LLM):
         return calls
 
     def _create_tool_result_message(
-        self, tool_calls: List[NormalizedToolCallItem], results: List[Any]
-    ) -> List[Dict[str, Any]]:
+        self, tool_calls: list[NormalizedToolCallItem], results: list[Any]
+    ) -> list[dict[str, Any]]:
         """
         Create tool result messages for OpenAI Responses API.
 
@@ -406,7 +404,7 @@ class OpenAILLM(LLM):
 
     def _standardize_and_emit_event(
         self, event: ResponseStreamEvent
-    ) -> Optional[LLMResponseEvent[OpenAIResponse]]:
+    ) -> LLMResponseEvent[OpenAIResponse] | None:
         """Forward native events and emit standardized versions."""
         # Forward the native event
         self.events.send(

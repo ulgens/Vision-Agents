@@ -1,7 +1,7 @@
 import logging
 import os
 from concurrent.futures import ThreadPoolExecutor
-from typing import Optional, cast
+from typing import cast
 
 import aiortc
 import av
@@ -100,14 +100,14 @@ class RoboflowCloudDetectionProcessor(
     def __init__(
         self,
         model_id: str,
-        api_key: Optional[str] = None,
-        api_url: Optional[str] = None,
+        api_key: str | None = None,
+        api_url: str | None = None,
         conf_threshold: float = 0.5,
         fps: int = 5,
         annotate: bool = True,
-        classes: Optional[list[str]] = None,
+        classes: list[str] | None = None,
         dim_background_factor: float = 0.0,
-        client: Optional[InferenceHTTPClient] = None,
+        client: InferenceHTTPClient | None = None,
     ):
         super().__init__(interval=0, receive_audio=False, receive_video=True)
 
@@ -140,7 +140,7 @@ class RoboflowCloudDetectionProcessor(
         self.dim_background_factor = max(0.0, dim_background_factor)
         self.annotate = annotate
 
-        self._events: Optional[EventManager] = None
+        self._events: EventManager | None = None
         self._client.configure(
             InferenceConfiguration(confidence_threshold=conf_threshold)
         )
@@ -149,7 +149,7 @@ class RoboflowCloudDetectionProcessor(
         self._classes = classes
 
         self._closed = False
-        self._video_forwarder: Optional[VideoForwarder] = None
+        self._video_forwarder: VideoForwarder | None = None
 
         # Thread pool for async inference
         self._executor = ThreadPoolExecutor(
@@ -166,8 +166,8 @@ class RoboflowCloudDetectionProcessor(
     async def process_video(
         self,
         incoming_track: aiortc.MediaStreamTrack,
-        participant_id: Optional[str],
-        shared_forwarder: Optional[VideoForwarder] = None,
+        participant_id: str | None,
+        shared_forwarder: VideoForwarder | None = None,
     ):
         """Process incoming video track with Roboflow detection."""
         if self._video_forwarder is not None:

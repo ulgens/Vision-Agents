@@ -6,7 +6,7 @@ import logging
 import time
 import uuid
 from collections import defaultdict
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, TypeGuard
+from typing import TYPE_CHECKING, Any, TypeGuard
 from uuid import uuid4
 
 import getstream.models
@@ -110,25 +110,25 @@ class Agent:
         # instructions
         instructions: str = "Keep your replies short and dont use special characters.",
         # setup stt, tts, and turn detection if not using a realtime llm
-        stt: Optional[STT] = None,
-        tts: Optional[TTS] = None,
-        turn_detection: Optional[TurnDetector] = None,
+        stt: STT | None = None,
+        tts: TTS | None = None,
+        turn_detection: TurnDetector | None = None,
         # for video gather data at an interval
         # - roboflow/ yolo typically run continuously
         # - often combined with API calls to fetch stats etc
         # - state from each processor is passed to the LLM
-        processors: Optional[List[Processor]] = None,
+        processors: list[Processor] | None = None,
         # MCP servers for external tool and resource access
-        mcp_servers: Optional[List[MCPBaseServer]] = None,
-        options: Optional[AgentOptions] = None,
+        mcp_servers: list[MCPBaseServer] | None = None,
+        options: AgentOptions | None = None,
         tracer: Tracer = trace.get_tracer("agents"),
-        profiler: Optional[Profiler] = None,
+        profiler: Profiler | None = None,
     ):
-        self._pending_turn: Optional[LLMTurn] = None
-        self.participants: Optional[ParticipantsState] = None
+        self._pending_turn: LLMTurn | None = None
+        self.participants: ParticipantsState | None = None
         self.call = None
-        self._active_processed_track_id: Optional[str] = None
-        self._active_source_track_id: Optional[str] = None
+        self._active_processed_track_id: str | None = None
+        self._active_source_track_id: str | None = None
         if options is None:
             options = default_agent_options()
         else:
@@ -145,8 +145,8 @@ class Agent:
 
         # only needed in case we spin threads
         self.tracer = tracer
-        self._root_span: Optional[Span] = None
-        self._root_ctx: Optional[Context] = None
+        self._root_span: Span | None = None
+        self._root_ctx: Context | None = None
 
         self.logger = _AgentLoggerAdapter(logger, {"agent_id": self.agent_user.id})
 
@@ -175,10 +175,10 @@ class Agent:
         # we sync the user talking and the agent responses to the conversation
         # because we want to support streaming responses and can have delta updates for both
         # user and agent
-        self.conversation: Optional[Conversation] = None
+        self.conversation: Conversation | None = None
 
         # Track pending transcripts for turn-based response triggering
-        self._pending_user_transcripts: Dict[str, TranscriptBuffer] = defaultdict(
+        self._pending_user_transcripts: dict[str, TranscriptBuffer] = defaultdict(
             TranscriptBuffer
         )
 
@@ -201,22 +201,22 @@ class Agent:
         self._current_frame = None
         self._interval_task = None
         self._callback_executed = False
-        self._track_tasks: Dict[str, asyncio.Task] = {}
+        self._track_tasks: dict[str, asyncio.Task] = {}
         # Track metadata: track_id -> TrackInfo
-        self._active_video_tracks: Dict[str, TrackInfo] = {}
-        self._video_forwarders: List[VideoForwarder] = []
-        self._current_video_track_id: Optional[str] = None
-        self._connection: Optional[Connection] = None
+        self._active_video_tracks: dict[str, TrackInfo] = {}
+        self._video_forwarders: list[VideoForwarder] = []
+        self._current_video_track_id: str | None = None
+        self._connection: Connection | None = None
 
         # the outgoing audio track
-        self._audio_track: Optional[OutputAudioTrack] = None
+        self._audio_track: OutputAudioTrack | None = None
 
         # the outgoing video track
-        self._video_track: Optional[VideoStreamTrack] = None
+        self._video_track: VideoStreamTrack | None = None
 
         self._realtime_connection = None
         self._pc_track_handler_attached: bool = False
-        self._audio_consumer_task: Optional[asyncio.Task] = None
+        self._audio_consumer_task: asyncio.Task | None = None
 
         # validation time
         self._validate_configuration()
@@ -438,7 +438,7 @@ class Agent:
                 )
 
     async def simple_response(
-        self, text: str, participant: Optional[Participant] = None
+        self, text: str, participant: Participant | None = None
     ) -> None:
         """
         Overwrite simple_response if you want to change how the Agent class calls the LLM
@@ -451,7 +451,7 @@ class Agent:
             span.set_attribute("text", text)
 
     async def simple_audio_response(
-        self, pcm: PcmData, participant: Optional[Participant] = None
+        self, pcm: PcmData, participant: Participant | None = None
     ) -> None:
         """
         Makes it easy to subclass how the agent calls the LLM for processing audio
@@ -836,8 +836,8 @@ class Agent:
     async def say(
         self,
         text: str,
-        user_id: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        user_id: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ):
         """
         Make the agent say something using TTS.
@@ -1196,7 +1196,7 @@ class Agent:
         return needs_audio or needs_video
 
     @property
-    def audio_processors(self) -> List[Any]:
+    def audio_processors(self) -> list[Any]:
         """Get processors that can process audio.
 
         Returns:
@@ -1205,7 +1205,7 @@ class Agent:
         return filter_processors(self.processors, ProcessorType.AUDIO)
 
     @property
-    def video_processors(self) -> List[Any]:
+    def video_processors(self) -> list[Any]:
         """Get processors that can process video.
 
         Returns:
@@ -1214,7 +1214,7 @@ class Agent:
         return filter_processors(self.processors, ProcessorType.VIDEO)
 
     @property
-    def video_publishers(self) -> List[Any]:
+    def video_publishers(self) -> list[Any]:
         """Get processors capable of publishing a video track.
 
         Returns:
@@ -1223,7 +1223,7 @@ class Agent:
         return filter_processors(self.processors, ProcessorType.VIDEO_PUBLISHER)
 
     @property
-    def audio_publishers(self) -> List[Any]:
+    def audio_publishers(self) -> list[Any]:
         """Get processors capable of publishing an audio track.
 
         Returns:
@@ -1232,7 +1232,7 @@ class Agent:
         return filter_processors(self.processors, ProcessorType.AUDIO_PUBLISHER)
 
     @property
-    def image_processors(self) -> List[Any]:
+    def image_processors(self) -> list[Any]:
         """Get processors that can process images.
 
         Returns:
@@ -1351,5 +1351,5 @@ class _AgentLoggerAdapter(logging.LoggerAdapter):
 
     def process(self, msg: str, kwargs):
         if self.extra:
-            return "[Agent: %s] | %s" % (self.extra["agent_id"], msg), kwargs
-        return super(_AgentLoggerAdapter, self).process(msg, kwargs)
+            return "[Agent: {}] | {}".format(self.extra["agent_id"], msg), kwargs
+        return super().process(msg, kwargs)

@@ -7,7 +7,7 @@ Provides a Click-based CLI with common options for debugging and logging.
 import asyncio
 import logging
 import warnings
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 from uuid import uuid4
 
 import click
@@ -69,7 +69,7 @@ def cli(launcher: "AgentLauncher") -> None:
     )
     def run_agent(
         call_type: str,
-        call_id: Optional[str],
+        call_id: str | None,
         debug: bool,
         log_level: str,
         no_demo: bool,

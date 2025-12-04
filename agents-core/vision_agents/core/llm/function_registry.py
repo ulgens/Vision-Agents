@@ -5,7 +5,8 @@ Function registry for managing available functions that can be called by LLMs.
 from __future__ import annotations
 
 import inspect
-from typing import Any, Callable, Dict, List, Optional, Type, Union, get_type_hints
+from typing import Any, Union, get_type_hints
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 
@@ -17,8 +18,8 @@ class FunctionParameter:
     """Represents a parameter of a function."""
 
     name: str
-    type: Type
-    description: Optional[str] = None
+    type: type
+    description: str | None = None
     required: bool = True
     default: Any = None
 
@@ -29,9 +30,9 @@ class FunctionDefinition:
 
     name: str
     description: str
-    parameters: List[FunctionParameter]
+    parameters: list[FunctionParameter]
     function: Callable
-    returns: Optional[Type] = None
+    returns: type | None = None
 
 
 @dataclass
@@ -40,7 +41,7 @@ class _ExplicitSchemaFunction:
 
     name: str
     description: str
-    parameters_schema: Dict[str, Any]
+    parameters_schema: dict[str, Any]
     function: Callable
 
 
@@ -48,13 +49,13 @@ class FunctionRegistry:
     """Registry for managing available functions that can be called by LLMs."""
 
     def __init__(self):
-        self._functions: Dict[str, FunctionDefinition | _ExplicitSchemaFunction] = {}
+        self._functions: dict[str, FunctionDefinition | _ExplicitSchemaFunction] = {}
 
     def register(
         self,
-        name: Optional[str] = None,
-        description: Optional[str] = None,
-        parameters_schema: Optional[Dict[str, Any]] = None,
+        name: str | None = None,
+        description: str | None = None,
+        parameters_schema: dict[str, Any] | None = None,
     ) -> Callable:
         """
         Decorator to register a function with the registry.
@@ -131,15 +132,15 @@ class FunctionRegistry:
 
     def get_function(
         self, name: str
-    ) -> Optional[FunctionDefinition | _ExplicitSchemaFunction]:
+    ) -> FunctionDefinition | _ExplicitSchemaFunction | None:
         """Get a function definition by name."""
         return self._functions.get(name)
 
-    def list_functions(self) -> List[str]:
+    def list_functions(self) -> list[str]:
         """Get a list of all registered function names."""
         return list(self._functions.keys())
 
-    def get_tool_schemas(self) -> List[ToolSchema]:
+    def get_tool_schemas(self) -> list[ToolSchema]:
         """Get tool schemas for all registered functions."""
         schemas = []
         for func_def in self._functions.values():
@@ -157,7 +158,7 @@ class FunctionRegistry:
                 schemas.append(schema)
         return schemas
 
-    def call_function(self, name: str, arguments: Dict[str, Any]) -> Any:
+    def call_function(self, name: str, arguments: dict[str, Any]) -> Any:
         """
         Call a registered function with the given arguments.
 
@@ -235,7 +236,7 @@ class FunctionRegistry:
             parameters_schema=schema,
         )
 
-    def _type_to_json_schema(self, type_hint: Type) -> Dict[str, Any]:
+    def _type_to_json_schema(self, type_hint: type) -> dict[str, Any]:
         """Convert a Python type hint to a JSON schema."""
         # Handle basic types
         if type_hint is str:
@@ -246,9 +247,9 @@ class FunctionRegistry:
             return {"type": "number"}
         elif type_hint is bool:
             return {"type": "boolean"}
-        elif type_hint is list or type_hint is List:
+        elif type_hint is list or type_hint is list:
             return {"type": "array"}
-        elif type_hint is dict or type_hint is Dict:
+        elif type_hint is dict or type_hint is dict:
             return {"type": "object"}
 
         # Handle Optional types

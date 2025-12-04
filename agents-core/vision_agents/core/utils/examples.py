@@ -1,9 +1,9 @@
-from typing import Dict, Any
+from typing import Any
 
 import httpx
 
 
-async def get_weather_by_location(location: str) -> Dict[str, Any]:
+async def get_weather_by_location(location: str) -> dict[str, Any]:
     """
     Get current weather for a location using Open-Meteo API.
 

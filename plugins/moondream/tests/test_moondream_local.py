@@ -14,7 +14,7 @@ To run only unit tests (no model loading):
 import asyncio
 import os
 from pathlib import Path
-from typing import Iterator
+from collections.abc import Iterator
 
 import numpy as np
 import pytest

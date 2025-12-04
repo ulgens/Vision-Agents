@@ -2,7 +2,7 @@ import abc
 import asyncio
 import logging
 from pathlib import Path
-from typing import Protocol, Any, List, Optional
+from typing import Protocol, Any
 from enum import Enum
 
 import aiortc
@@ -92,8 +92,8 @@ class AudioPublisherMixin:
 
 
 def filter_processors(
-    processors: List[Processor], processor_type: ProcessorType
-) -> List[Processor]:
+    processors: list[Processor], processor_type: ProcessorType
+) -> list[Processor]:
     """
     Filter processors based on the processor type using hasattr checks.
 
@@ -184,7 +184,7 @@ class ImageCapture(AudioVideoProcessor, ImageProcessorMixin):
         self,
         image: Image.Image,
         user_id: str,
-        metadata: Optional[dict[Any, Any]] = None,
+        metadata: dict[Any, Any] | None = None,
     ):
         # Check if enough time has passed since last capture
         if not self.should_process():

@@ -1,5 +1,6 @@
 # mypy: ignore-errors
-from typing import Callable, ParamSpec, TypeVar, Any
+from typing import ParamSpec, TypeVar, Any
+from collections.abc import Callable
 
 
 P2 = ParamSpec("P2")

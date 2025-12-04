@@ -1,7 +1,8 @@
 import base64
 import logging
 from collections import deque
-from typing import Iterator, Optional, cast
+from typing import cast
+from collections.abc import Iterator
 
 import av
 from aiortc.mediastreams import MediaStreamTrack, VideoStreamTrack
@@ -49,11 +50,11 @@ class ChatCompletionsVLM(VideoLLM):
     def __init__(
         self,
         model: str,
-        api_key: Optional[str] = None,
-        base_url: Optional[str] = None,
+        api_key: str | None = None,
+        base_url: str | None = None,
         fps: int = 1,
         frame_buffer_seconds: int = 10,
-        client: Optional[AsyncOpenAI] = None,
+        client: AsyncOpenAI | None = None,
     ):
         """
         Initialize the ChatCompletionsVLM class.
@@ -77,7 +78,7 @@ class ChatCompletionsVLM(VideoLLM):
             self._client = AsyncOpenAI(api_key=api_key, base_url=base_url)
 
         self._fps = fps
-        self._video_forwarder: Optional[VideoForwarder] = None
+        self._video_forwarder: VideoForwarder | None = None
 
         # Buffer latest 10s of the video track to forward it to the model
         # together with the user transcripts
@@ -90,8 +91,8 @@ class ChatCompletionsVLM(VideoLLM):
     async def simple_response(
         self,
         text: str,
-        processors: Optional[list[Processor]] = None,
-        participant: Optional[Participant] = None,
+        processors: list[Processor] | None = None,
+        participant: Participant | None = None,
     ) -> LLMResponseEvent:
         """
         simple_response is a standardized way to create an LLM response.
@@ -143,8 +144,8 @@ class ChatCompletionsVLM(VideoLLM):
             return LLMResponseEvent(original=None, text="")
 
         i = 0
-        llm_response: LLMResponseEvent[Optional[ChatCompletionChunk]] = (
-            LLMResponseEvent(original=None, text="")
+        llm_response: LLMResponseEvent[ChatCompletionChunk | None] = LLMResponseEvent(
+            original=None, text=""
         )
         text_chunks: list[str] = []
         total_text = ""
@@ -194,7 +195,7 @@ class ChatCompletionsVLM(VideoLLM):
     async def watch_video_track(
         self,
         track: MediaStreamTrack,
-        shared_forwarder: Optional[VideoForwarder] = None,
+        shared_forwarder: VideoForwarder | None = None,
     ) -> None:
         """
         Setup video forwarding and start buffering video frames.

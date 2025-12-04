@@ -1,6 +1,7 @@
 """Utility to convert MCP tools to function registry format."""
 
-from typing import Any, Dict, Callable
+from typing import Any
+from collections.abc import Callable
 from mcp import types
 
 from ..llm.llm_types import ToolSchema
@@ -29,7 +30,7 @@ class MCPToolConverter:
         )
 
     @staticmethod
-    def _convert_input_schema(input_schema: Dict[str, Any]) -> Dict[str, Any]:
+    def _convert_input_schema(input_schema: dict[str, Any]) -> dict[str, Any]:
         """Convert MCP input schema to JSON schema format.
 
         Args:

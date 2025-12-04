@@ -9,7 +9,7 @@ real-time bidirectional audio streaming.
 import logging
 
 from dotenv import load_dotenv
-from typing import Dict, Any
+from typing import Any
 
 from vision_agents.core import User, Agent, cli
 from vision_agents.core.agents import AgentLauncher
@@ -26,7 +26,7 @@ async def create_agent(**kwargs) -> Agent:
 
     # MCP and function calling are supported. see https://visionagents.ai/guides/mcp-tool-calling
     @llm.register_function(description="Get current weather for a location")
-    async def get_weather(location: str) -> Dict[str, Any]:
+    async def get_weather(location: str) -> dict[str, Any]:
         return await get_weather_by_location(location)
 
     # Create the agent

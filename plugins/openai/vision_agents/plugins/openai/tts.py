@@ -1,5 +1,4 @@
 import os
-from typing import Optional
 
 from openai import AsyncOpenAI
 
@@ -17,10 +16,10 @@ class TTS(BaseTTS):
     def __init__(
         self,
         *,
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         model: str = "gpt-4o-mini-tts",
         voice: str = "alloy",
-        client: Optional[AsyncOpenAI] = None,
+        client: AsyncOpenAI | None = None,
     ) -> None:
         super().__init__(provider_name="openai_tts")
         api_key = api_key or os.environ.get("OPENAI_API_KEY")

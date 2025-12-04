@@ -1,5 +1,3 @@
-from typing import List
-
 from vision_agents.core.stt.events import STTTranscriptEvent, STTPartialTranscriptEvent
 
 
@@ -24,7 +22,7 @@ class TranscriptBuffer:
     """
 
     def __init__(self):
-        self._segments: List[str] = []
+        self._segments: list[str] = []
         self._has_pending_partial: bool = False
 
     def update(
@@ -73,7 +71,7 @@ class TranscriptBuffer:
         self._has_pending_partial = False
 
     @property
-    def segments(self) -> List[str]:
+    def segments(self) -> list[str]:
         """Return a copy of the current segments."""
         return self._segments.copy()
 

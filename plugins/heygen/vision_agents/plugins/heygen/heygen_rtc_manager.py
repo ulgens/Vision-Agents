@@ -1,6 +1,7 @@
 import asyncio
 import logging
-from typing import Optional, Callable, Any
+from typing import Optional, Any
+from collections.abc import Callable
 
 from aiortc import (
     RTCPeerConnection,
@@ -27,7 +28,7 @@ class HeyGenRTCManager:
         self,
         avatar_id: str = "default",
         quality: Optional["VideoQuality"] = VideoQuality.HIGH,
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
     ):
         """Initialize the RTC manager.
 
@@ -46,13 +47,13 @@ class HeyGenRTCManager:
             api_key=api_key,
         )
 
-        self.pc: Optional[RTCPeerConnection] = None
+        self.pc: RTCPeerConnection | None = None
 
         # Video track callback for receiving avatar video
-        self._video_callback: Optional[Callable[[MediaStreamTrack], Any]] = None
+        self._video_callback: Callable[[MediaStreamTrack], Any] | None = None
 
         # Audio track callback for receiving avatar audio
-        self._audio_callback: Optional[Callable[[MediaStreamTrack], Any]] = None
+        self._audio_callback: Callable[[MediaStreamTrack], Any] | None = None
 
         self._connected = False
         self._connection_ready = asyncio.Event()

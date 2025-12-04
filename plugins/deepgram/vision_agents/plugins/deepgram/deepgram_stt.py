@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import os
-from typing import Optional, Any
+from typing import Any
 
 from deepgram import AsyncDeepgramClient
 from deepgram.core import EventType
@@ -35,13 +35,13 @@ class STT(stt.STT):
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         model: str = "flux-general-en",
-        language: Optional[str] = None,
+        language: str | None = None,
         eager_turn_detection: bool = False,
-        eot_threshold: Optional[float] = None,
-        eager_eot_threshold: Optional[float] = None,
-        client: Optional[AsyncDeepgramClient] = None,
+        eot_threshold: float | None = None,
+        eager_eot_threshold: float | None = None,
+        client: AsyncDeepgramClient | None = None,
     ):
         """
         Initialize Deepgram STT.
@@ -75,16 +75,16 @@ class STT(stt.STT):
         if self.eager_turn_detection and eager_eot_threshold is None:
             eager_eot_threshold = 0.5
         self.eager_eot_threshold = eager_eot_threshold
-        self._current_participant: Optional[Participant] = None
-        self.connection: Optional[AsyncV2SocketClient] = None
+        self._current_participant: Participant | None = None
+        self.connection: AsyncV2SocketClient | None = None
         self._connection_ready = asyncio.Event()
-        self._connection_context: Optional[Any] = None
-        self._listen_task: Optional[asyncio.Task[Any]] = None
+        self._connection_context: Any | None = None
+        self._listen_task: asyncio.Task[Any] | None = None
 
     async def process_audio(
         self,
         pcm_data: PcmData,
-        participant: Optional[Participant] = None,
+        participant: Participant | None = None,
     ):
         """
         Process audio data through Deepgram for transcription.

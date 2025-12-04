@@ -13,7 +13,7 @@ To run only unit tests (no API key needed):
 
 import os
 from pathlib import Path
-from typing import Iterator
+from collections.abc import Iterator
 
 import pytest
 import av

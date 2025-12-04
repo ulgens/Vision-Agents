@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import os
-from typing import Optional
 
 import numpy as np
 from fish_audio_sdk import Session, ASRRequest
@@ -34,9 +33,9 @@ class STT(stt.STT):
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
-        language: Optional[str] = None,
-        client: Optional[Session] = None,
+        api_key: str | None = None,
+        language: str | None = None,
+        client: Session | None = None,
     ):
         super().__init__(provider_name="fish")
 
@@ -53,7 +52,7 @@ class STT(stt.STT):
     async def process_audio(
         self,
         pcm_data: PcmData,
-        participant: Optional[Participant] = None,
+        participant: Participant | None = None,
     ):
         """
         Process audio data through Fish Audio for transcription.

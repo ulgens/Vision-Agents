@@ -3,7 +3,7 @@ import datetime
 import logging
 import uuid
 from abc import ABC, abstractmethod
-from typing import Optional, List, Any, Dict
+from typing import Any
 
 from dataclasses import dataclass
 
@@ -13,11 +13,11 @@ logger = logging.getLogger(__name__)
 @dataclass
 class Message:
     content: str
-    original: Optional[Any] = None  # the original openai, claude or gemini message
-    timestamp: Optional[datetime.datetime] = None
-    role: Optional[str] = None
-    user_id: Optional[str] = None
-    id: Optional[str] = None
+    original: Any | None = None  # the original openai, claude or gemini message
+    timestamp: datetime.datetime | None = None
+    role: str | None = None
+    user_id: str | None = None
+    id: str | None = None
 
     def __post_init__(self):
         self.id = self.id or str(uuid.uuid4())
@@ -28,7 +28,7 @@ class ContentBuffer:
     """Manages out-of-order fragment buffering for streaming messages."""
 
     def __init__(self):
-        self.fragments: Dict[int, str] = {}
+        self.fragments: dict[int, str] = {}
         self.last_index = -1
         self.accumulated = ""
 
@@ -59,7 +59,7 @@ class MessageState:
         self.message_id = message_id
         self.buffer = ContentBuffer()
         self.created_in_backend = False  # Has message been sent to Stream/DB?
-        self.backend_message_ids: List[
+        self.backend_message_ids: list[
             str
         ] = []  # For chunking: multiple backend IDs per internal ID
 
@@ -70,11 +70,11 @@ class Conversation(ABC):
     def __init__(
         self,
         instructions: str,
-        messages: List[Message],
+        messages: list[Message],
     ):
         self.instructions = instructions
         self.messages = [m for m in messages]
-        self._message_states: Dict[str, MessageState] = {}
+        self._message_states: dict[str, MessageState] = {}
         self._lock = asyncio.Lock()  # One lock to rule them all
 
     async def send_message(
@@ -82,7 +82,7 @@ class Conversation(ABC):
         role: str,
         user_id: str,
         content: str,
-        message_id: Optional[str] = None,
+        message_id: str | None = None,
         original: Any = None,
     ) -> Message:
         """Send a simple, complete message (non-streaming).
@@ -124,8 +124,8 @@ class Conversation(ABC):
         role: str,
         user_id: str,
         content: str = "",
-        message_id: Optional[str] = None,
-        content_index: Optional[int] = None,
+        message_id: str | None = None,
+        content_index: int | None = None,
         completed: bool = True,
         replace: bool = False,
         original: Any = None,
@@ -222,7 +222,7 @@ class Conversation(ABC):
         """
         pass
 
-    def _find_message(self, message_id: str) -> Optional[Message]:
+    def _find_message(self, message_id: str) -> Message | None:
         """Find a message by ID."""
         return next((m for m in self.messages if m.id == message_id), None)
 

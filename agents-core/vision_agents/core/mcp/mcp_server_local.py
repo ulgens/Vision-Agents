@@ -1,6 +1,6 @@
 """Local MCP server connection using stdio transport."""
 
-from typing import Optional, Dict, Callable
+from collections.abc import Callable
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
@@ -14,7 +14,7 @@ class MCPServerLocal(MCPBaseServer):
     def __init__(
         self,
         command: str,
-        env: Optional[Dict[str, str]] = None,
+        env: dict[str, str] | None = None,
         session_timeout: float = 300.0,
     ):
         """Initialize the local MCP server connection.
@@ -27,10 +27,10 @@ class MCPServerLocal(MCPBaseServer):
         super().__init__(session_timeout)
         self.command = command
         self.env = env or {}
-        self._server_params: Optional[StdioServerParameters] = None
-        self._client_context: Optional[object] = None  # AsyncGeneratorContextManager
-        self._session_context: Optional[object] = None  # ClientSession context manager
-        self._get_session_id_cb: Optional[Callable[[], Optional[str]]] = None
+        self._server_params: StdioServerParameters | None = None
+        self._client_context: object | None = None  # AsyncGeneratorContextManager
+        self._session_context: object | None = None  # ClientSession context manager
+        self._get_session_id_cb: Callable[[], str | None] | None = None
 
         # Parse command into executable and arguments
         self._parse_command()

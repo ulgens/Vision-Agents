@@ -107,9 +107,9 @@ class Instructions:
 
         try:
             logger.info(f"Reading instructions from file {full_path}")
-            with open(full_path, mode="r") as f:
+            with open(full_path) as f:
                 return f.read()
-        except (OSError, IOError, UnicodeDecodeError) as exc:
+        except (OSError, UnicodeDecodeError) as exc:
             raise InstructionsReadError(
                 f"Failed to read instructions from file {full_path}; reason - {exc}"
             ) from exc

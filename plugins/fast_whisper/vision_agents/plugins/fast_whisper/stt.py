@@ -2,7 +2,7 @@ import asyncio
 import logging
 import time
 from concurrent.futures import ThreadPoolExecutor
-from typing import Literal, Optional
+from typing import Literal
 
 from faster_whisper import WhisperModel
 from faster_whisper.transcribe import Segment, TranscriptionInfo
@@ -41,9 +41,9 @@ class STT(stt.STT):
     def __init__(
         self,
         model_size: Literal["tiny", "base", "small", "medium", "large"] = "tiny",
-        language: Optional[str] = "en",
+        language: str | None = "en",
         device: Literal["cpu", "cuda"] = "cpu",
-        client: Optional[WhisperModel] = None,
+        client: WhisperModel | None = None,
     ):
         """
         Initialize Faster-Whisper STT.
@@ -88,7 +88,7 @@ class STT(stt.STT):
     async def process_audio(
         self,
         pcm_data: PcmData,
-        participant: Optional[Participant] = None,
+        participant: Participant | None = None,
     ):
         """
         Process audio data through faster-whisper for transcription.
@@ -139,7 +139,7 @@ class STT(stt.STT):
                 e, context="buffering_audio", participant=participant
             )
 
-    async def _process_buffer(self, participant: Optional[Participant] = None):
+    async def _process_buffer(self, participant: Participant | None = None):
         """
         Process the current audio buffer through faster-whisper.
 

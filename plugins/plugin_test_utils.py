@@ -21,7 +21,7 @@ IMPORTANT: When writing tests for plugins, consider the following:
 import json
 import os
 import sys
-from typing import Any, Dict
+from typing import Any
 
 # Load environment variables from .env files
 try:
@@ -94,7 +94,7 @@ def get_audio_asset(file_name: str) -> str:
     return get_asset_path(file_name)
 
 
-def get_json_metadata(file_name: str) -> Dict[str, Any]:
+def get_json_metadata(file_name: str) -> dict[str, Any]:
     """
     Load and return the contents of a JSON metadata file.
 
@@ -105,7 +105,7 @@ def get_json_metadata(file_name: str) -> Dict[str, Any]:
         The parsed JSON content as a dictionary
     """
     json_path = get_asset_path(file_name)
-    with open(json_path, "r") as f:
+    with open(json_path) as f:
         return json.load(f)
 
 

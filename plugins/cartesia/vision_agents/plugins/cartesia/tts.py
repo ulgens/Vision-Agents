@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import Optional, cast, AsyncIterator, Iterator
+from typing import cast
+from collections.abc import AsyncIterator, Iterator
 
 from cartesia import AsyncCartesia
 from cartesia.tts import (
@@ -22,11 +23,11 @@ class TTS(tts.TTS):
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         model_id: str = "sonic-3",
         voice_id: str | None = "6ccbfb76-1fc6-48f7-b71d-91ac6298247b",
         sample_rate: int = 16000,
-        client: Optional[AsyncCartesia] = None,
+        client: AsyncCartesia | None = None,
     ) -> None:
         """Create a new Cartesia TTS instance.
 

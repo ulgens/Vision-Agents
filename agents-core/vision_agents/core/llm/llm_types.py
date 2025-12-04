@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, Dict, List, Literal, TypedDict, Union
+from typing import Any, Literal, TypedDict, Union
 
 from typing_extensions import NotRequired
 
@@ -31,7 +31,7 @@ class AudioPart(TypedDict):
 
 class JsonPart(TypedDict):
     type: Literal["json"]
-    data: Dict[str, Any]
+    data: dict[str, Any]
 
 
 ContentPart = Union[TextPart, ImageBytesPart, ImageURLPart, AudioPart, JsonPart]
@@ -46,7 +46,7 @@ class Role(str, Enum):
 
 class Message(TypedDict):
     role: Role
-    content: List[ContentPart]
+    content: list[ContentPart]
 
 
 # =============================
@@ -64,12 +64,12 @@ class NormalizedStatus(str, Enum):
 class ToolSchema(TypedDict, total=False):
     name: str
     description: NotRequired[str]
-    parameters_schema: Dict[str, Any]
+    parameters_schema: dict[str, Any]
 
 
 class ResponseFormat(TypedDict, total=False):
     # JSON Schema to enforce structured output, if supported by provider
-    json_schema: Dict[str, Any]
+    json_schema: dict[str, Any]
     # If true, providers should enforce strict adherence where possible
     strict: NotRequired[bool]
 
@@ -78,7 +78,7 @@ class NormalizedUsage(TypedDict, total=False):
     input_tokens: int
     output_tokens: int
     total_tokens: int
-    raw_usage: NotRequired[Dict[str, Any]]
+    raw_usage: NotRequired[dict[str, Any]]
 
 
 class NormalizedTextItem(TypedDict, total=False):
@@ -107,7 +107,7 @@ class NormalizedImageItem(TypedDict, total=False):
 class NormalizedToolCallItem(TypedDict, total=False):
     type: Literal["tool_call"]
     name: str
-    arguments_json: Dict[str, Any]
+    arguments_json: dict[str, Any]
     id: NotRequired[str]  # Provider-specific tool call ID (e.g., for OpenAI, Anthropic)
     thought_signature: NotRequired[
         str
@@ -117,7 +117,7 @@ class NormalizedToolCallItem(TypedDict, total=False):
 class NormalizedToolResultItem(TypedDict, total=False):
     type: Literal["tool_result"]
     name: str
-    result_json: Dict[str, Any]
+    result_json: dict[str, Any]
     is_error: NotRequired[bool]
 
 
@@ -134,12 +134,12 @@ class NormalizedResponse(TypedDict, total=False):
     id: str
     model: str
     status: NormalizedStatus
-    output: List[NormalizedOutputItem]
+    output: list[NormalizedOutputItem]
     output_text: NotRequired[str]
     usage: NotRequired[NormalizedUsage]
-    metadata: NotRequired[Dict[str, Any]]
-    warnings: NotRequired[List[str]]
-    incomplete_details: NotRequired[Dict[str, Any]]
+    metadata: NotRequired[dict[str, Any]]
+    warnings: NotRequired[list[str]]
+    incomplete_details: NotRequired[dict[str, Any]]
     raw: NotRequired[Any]
 
 

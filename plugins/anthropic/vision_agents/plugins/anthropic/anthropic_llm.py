@@ -1,4 +1,4 @@
-from typing import Optional, List, TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any
 import json
 import anthropic
 from anthropic import AsyncAnthropic, AsyncStream
@@ -48,8 +48,8 @@ class ClaudeLLM(LLM):
     def __init__(
         self,
         model: str,
-        api_key: Optional[str] = None,
-        client: Optional[AsyncAnthropic] = None,
+        api_key: str | None = None,
+        client: AsyncAnthropic | None = None,
     ):
         """
         Initialize the ClaudeLLM class.
@@ -62,8 +62,8 @@ class ClaudeLLM(LLM):
         super().__init__()
         self.events.register_events_from_module(events)
         self.model = model
-        self._pending_tool_uses_by_index: Dict[
-            int, Dict[str, Any]
+        self._pending_tool_uses_by_index: dict[
+            int, dict[str, Any]
         ] = {}  # index -> {id, name, parts: []}
 
         if client is not None:
@@ -74,7 +74,7 @@ class ClaudeLLM(LLM):
     async def simple_response(
         self,
         text: str,
-        processors: Optional[List[Processor]] = None,
+        processors: list[Processor] | None = None,
         participant: Participant = None,
     ):
         """
@@ -213,8 +213,8 @@ class ClaudeLLM(LLM):
 
         elif isinstance(original, AsyncStream):
             stream: AsyncStream[RawMessageStreamEvent] = original
-            text_parts: List[str] = []
-            accumulated_calls: List[NormalizedToolCallItem] = []
+            text_parts: list[str] = []
+            accumulated_calls: list[NormalizedToolCallItem] = []
 
             # 1) First round: read stream, gather initial tool_use calls
             async for event in stream:
@@ -245,7 +245,7 @@ class ClaudeLLM(LLM):
                 # Build tool_result user message
                 # Also reconstruct the assistant tool_use message that triggered these calls
                 assistant_content = []
-                executed_calls: List[NormalizedToolCallItem] = []
+                executed_calls: list[NormalizedToolCallItem] = []
                 for tc, res, err in triples:
                     executed_calls.append(tc)
                     assistant_content.append(
@@ -288,7 +288,7 @@ class ClaudeLLM(LLM):
                 follow_up_stream = await self.client.messages.create(**tools_cfg)
 
                 # Read the follow-up stream; collect text deltas & any NEW tool_use calls
-                follow_up_text_parts: List[str] = []
+                follow_up_text_parts: list[str] = []
                 accumulated_calls = []  # reset; we'll refill with new calls
                 async for ev in follow_up_stream:
                     last_followup_stream = ev
@@ -315,7 +315,7 @@ class ClaudeLLM(LLM):
                     stream=True,
                     max_tokens=1000,
                 )
-                final_text_parts: List[str] = []
+                final_text_parts: list[str] = []
                 async for ev in final_stream:
                     last_followup_stream = ev
                     llm_response_optional = self._standardize_and_emit_event(
@@ -343,8 +343,8 @@ class ClaudeLLM(LLM):
         return llm_response
 
     def _standardize_and_emit_event(
-        self, event: RawMessageStreamEvent, text_parts: List[str]
-    ) -> Optional[LLMResponseEvent[Any]]:
+        self, event: RawMessageStreamEvent, text_parts: list[str]
+    ) -> LLMResponseEvent[Any] | None:
         """
         Forwards the events and also send out a standardized version (the agent class hooks into that)
         """
@@ -377,7 +377,7 @@ class ClaudeLLM(LLM):
         return None
 
     @staticmethod
-    def _normalize_message(claude_messages: Any) -> List["Message"]:
+    def _normalize_message(claude_messages: Any) -> list["Message"]:
         from vision_agents.core.agents.conversation import Message
 
         if isinstance(claude_messages, str):
@@ -385,10 +385,10 @@ class ClaudeLLM(LLM):
                 {"content": claude_messages, "role": "user", "type": "text"}
             ]
 
-        if not isinstance(claude_messages, (List, tuple)):
+        if not isinstance(claude_messages, (list, tuple)):
             claude_messages = [claude_messages]
 
-        messages: List[Message] = []
+        messages: list[Message] = []
         for m in claude_messages:
             if isinstance(m, dict):
                 content = m.get("content", "")
@@ -402,8 +402,8 @@ class ClaudeLLM(LLM):
         return messages
 
     def _convert_tools_to_provider_format(
-        self, tools: List[ToolSchema]
-    ) -> List[Dict[str, Any]]:
+        self, tools: list[ToolSchema]
+    ) -> list[dict[str, Any]]:
         """
         Convert ToolSchema objects to Anthropic format.
 
@@ -425,7 +425,7 @@ class ClaudeLLM(LLM):
 
     def _extract_tool_calls_from_response(
         self, response: Any
-    ) -> List[NormalizedToolCallItem]:
+    ) -> list[NormalizedToolCallItem]:
         """
         Extract tool calls from Anthropic response.
 
@@ -454,8 +454,8 @@ class ClaudeLLM(LLM):
     def _extract_tool_calls_from_stream_chunk(  # type: ignore[override]
         self,
         chunk: Any,
-        current_tool_call: Optional[NormalizedToolCallItem] = None,
-    ) -> tuple[List[NormalizedToolCallItem], Optional[NormalizedToolCallItem]]:
+        current_tool_call: NormalizedToolCallItem | None = None,
+    ) -> tuple[list[NormalizedToolCallItem], NormalizedToolCallItem | None]:
         """
         Extract tool calls from Anthropic streaming chunk using index-keyed accumulation.
         Args:
@@ -502,8 +502,8 @@ class ClaudeLLM(LLM):
         return tool_calls, None
 
     def _create_tool_result_message(
-        self, tool_calls: List[NormalizedToolCallItem], results: List[Any]
-    ) -> List[Dict[str, Any]]:
+        self, tool_calls: list[NormalizedToolCallItem], results: list[Any]
+    ) -> list[dict[str, Any]]:
         """
         Create tool result messages for Anthropic.
             tool_calls: List of tool calls that were executed

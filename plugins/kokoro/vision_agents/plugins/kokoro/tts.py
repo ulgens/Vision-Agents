@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import AsyncIterator, Iterator, List, Optional
+from collections.abc import AsyncIterator, Iterator
 
 import numpy as np
 
@@ -27,8 +27,8 @@ class TTS(tts.TTS):
         voice: str = "af_heart",
         speed: float = 1.0,
         sample_rate: int = 24_000,
-        device: Optional[str] = None,
-        client: Optional[KPipeline] = None,
+        device: str | None = None,
+        client: KPipeline | None = None,
     ) -> None:
         super().__init__()
 
@@ -51,7 +51,7 @@ class TTS(tts.TTS):
         self, text: str, *_, **__
     ) -> PcmData | Iterator[PcmData] | AsyncIterator[PcmData]:  # noqa: D401
         loop = asyncio.get_event_loop()
-        chunks: List[bytes] = await loop.run_in_executor(
+        chunks: list[bytes] = await loop.run_in_executor(
             None, lambda: list(self._generate_chunks(text))
         )
 

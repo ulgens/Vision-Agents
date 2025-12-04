@@ -3,7 +3,8 @@ import fractions
 import os
 import time
 import uuid
-from typing import AsyncIterator, Literal, Optional
+from typing import Literal
+from collections.abc import AsyncIterator
 from unittest.mock import AsyncMock
 
 import numpy as np
@@ -224,9 +225,10 @@ class AsyncStreamStub:
     def add_chunk(
         self,
         content: str = "",
-        finish_reason: Optional[
+        finish_reason: None
+        | (
             Literal["stop", "length", "tool_calls", "content_filter", "function_call"]
-        ] = None,
+        ) = None,
     ):
         choice = Choice(
             index=0,

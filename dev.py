@@ -8,13 +8,12 @@ import os
 import shlex
 import subprocess
 import sys
-from typing import Optional
 
 import click
 
 
 def run(
-    command: str, env: Optional[dict] = None, check: bool = True
+    command: str, env: dict | None = None, check: bool = True
 ) -> subprocess.CompletedProcess:
     """Run a shell command with automatic argument parsing."""
     click.echo(f"Running: {command}")

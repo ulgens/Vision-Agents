@@ -1,5 +1,5 @@
 import json
-from typing import Optional, List, Any, TYPE_CHECKING, Dict
+from typing import Optional, Any, TYPE_CHECKING
 from xai_sdk import AsyncClient
 from xai_sdk.chat import system, user, Response, Chunk, tool_result, tool
 from xai_sdk.proto import chat_pb2
@@ -45,8 +45,8 @@ class XAILLM(LLM):
     def __init__(
         self,
         model: str = "grok-4-latest",
-        api_key: Optional[str] = None,
-        client: Optional[AsyncClient] = None,
+        api_key: str | None = None,
+        client: AsyncClient | None = None,
     ):
         """
         Initialize the XAILLM class.
@@ -72,8 +72,8 @@ class XAILLM(LLM):
     async def simple_response(
         self,
         text: str,
-        processors: Optional[List[Processor]] = None,
-        participant: Optional[Participant] = None,
+        processors: list[Processor] | None = None,
+        participant: Participant | None = None,
     ):
         """
         simple_response is a standardized way (across openai, claude, gemini etc.) to create a response.
@@ -128,7 +128,7 @@ class XAILLM(LLM):
         # Get response based on streaming preference
         if stream:
             # Handle streaming response
-            llm_response: Optional[LLMResponseEvent[Response]] = None
+            llm_response: LLMResponseEvent[Response] | None = None
             pending_tool_calls = []
             seen = set()
             assert self.xai_chat is not None
@@ -187,7 +187,7 @@ class XAILLM(LLM):
         )
 
     @staticmethod
-    def _normalize_message(input_text: str) -> List["Message"]:
+    def _normalize_message(input_text: str) -> list["Message"]:
         """
         Takes the input text and standardizes it so we can store it in chat
         """
@@ -201,7 +201,7 @@ class XAILLM(LLM):
 
         return [message]
 
-    def _convert_tools_to_provider_format(self, tools: List[ToolSchema]) -> List[Any]:
+    def _convert_tools_to_provider_format(self, tools: list[ToolSchema]) -> list[Any]:
         """
         Convert ToolSchema objects to xAI SDK format.
 
@@ -235,7 +235,7 @@ class XAILLM(LLM):
 
     def _extract_tool_calls_from_response(
         self, response: Response
-    ) -> List[NormalizedToolCallItem]:
+    ) -> list[NormalizedToolCallItem]:
         """
         Extract tool calls from xAI response.
 
@@ -273,8 +273,8 @@ class XAILLM(LLM):
         return calls
 
     def _create_tool_result_message(
-        self, tool_calls: List[NormalizedToolCallItem], results: List[Any]
-    ) -> List[Any]:
+        self, tool_calls: list[NormalizedToolCallItem], results: list[Any]
+    ) -> list[Any]:
         """
         Create tool result messages for xAI SDK.
 
@@ -297,7 +297,7 @@ class XAILLM(LLM):
         return msgs
 
     async def _handle_tool_calls(
-        self, tool_calls: List[NormalizedToolCallItem], original_kwargs: Dict[str, Any]
+        self, tool_calls: list[NormalizedToolCallItem], original_kwargs: dict[str, Any]
     ) -> LLMResponseEvent[Response]:
         """
         Handle tool calls by executing them and getting a follow-up response.
@@ -310,7 +310,7 @@ class XAILLM(LLM):
         Returns:
             LLM response with tool results
         """
-        llm_response: Optional[LLMResponseEvent[Response]] = None
+        llm_response: LLMResponseEvent[Response] | None = None
         max_rounds = 3
         current_tool_calls = tool_calls
         seen: set[tuple] = set()
@@ -401,7 +401,7 @@ class XAILLM(LLM):
 
     def _standardize_and_emit_chunk(
         self, chunk: Chunk, response: Response
-    ) -> Optional[LLMResponseEvent[Response]]:
+    ) -> LLMResponseEvent[Response] | None:
         """
         Forwards the chunk events and also send out a standardized version (the agent class hooks into that)
         """

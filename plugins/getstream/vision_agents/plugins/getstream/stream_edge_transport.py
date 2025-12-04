@@ -3,7 +3,7 @@ import logging
 import asyncio
 import os
 import webbrowser
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 from urllib.parse import urlencode
 
 import aiortc
@@ -73,7 +73,7 @@ class StreamEdge(EdgeTransport):
         self.events = EventManager()
         self.events.register_events_from_module(events)
         self.events.register_events_from_module(sfu_events)
-        self.conversation: Optional[StreamConversation] = None
+        self.conversation: StreamConversation | None = None
         self.channel_type = "messaging"
         self.agent_user_id: str | None = None
         # Track mapping: (user_id, session_id, track_type_int) -> {"track_id": str, "published": bool}
@@ -333,7 +333,7 @@ class StreamEdge(EdgeTransport):
 
     def add_track_subscriber(
         self, track_id: str
-    ) -> Optional[aiortc.mediastreams.MediaStreamTrack]:
+    ) -> aiortc.mediastreams.MediaStreamTrack | None:
         return self._connection.subscriber_pc.add_track_subscriber(track_id)
 
     async def publish_tracks(self, audio_track, video_track):

@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from getstream.video.rtc import PcmData
 
 from vision_agents.core.events import PluginBaseEvent
-from typing import Optional, Any, Dict
+from typing import Any
 import uuid
 
 
@@ -12,16 +12,16 @@ class RealtimeConnectedEvent(PluginBaseEvent):
     """Event emitted when realtime connection is established."""
 
     type: str = field(default="plugin.realtime_connected", init=False)
-    provider: Optional[str] = None
-    session_config: Optional[dict[str, Any]] = None
-    capabilities: Optional[list[str]] = None
+    provider: str | None = None
+    session_config: dict[str, Any] | None = None
+    capabilities: list[str] | None = None
 
 
 @dataclass
 class RealtimeDisconnectedEvent(PluginBaseEvent):
     type: str = field(default="plugin.realtime_disconnected", init=False)
-    provider: Optional[str] = None
-    reason: Optional[str] = None
+    provider: str | None = None
+    reason: str | None = None
     was_clean: bool = True
 
 
@@ -30,7 +30,7 @@ class RealtimeAudioInputEvent(PluginBaseEvent):
     """Event emitted when audio input is sent to realtime session."""
 
     type: str = field(default="plugin.realtime_audio_input", init=False)
-    data: Optional[PcmData] = None
+    data: PcmData | None = None
 
 
 @dataclass
@@ -38,8 +38,8 @@ class RealtimeAudioOutputEvent(PluginBaseEvent):
     """Event emitted when audio output is received from realtime session."""
 
     type: str = field(default="plugin.realtime_audio_output", init=False)
-    data: Optional[PcmData] = None
-    response_id: Optional[str] = None
+    data: PcmData | None = None
+    response_id: str | None = None
 
 
 @dataclass
@@ -47,11 +47,11 @@ class RealtimeResponseEvent(PluginBaseEvent):
     """Event emitted when realtime session provides a response."""
 
     type: str = field(default="plugin.realtime_response", init=False)
-    original: Optional[str] = None
-    text: Optional[str] = None
+    original: str | None = None
+    text: str | None = None
     response_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     is_complete: bool = True
-    conversation_item_id: Optional[str] = None
+    conversation_item_id: str | None = None
 
 
 @dataclass
@@ -59,13 +59,11 @@ class RealtimeConversationItemEvent(PluginBaseEvent):
     """Event emitted for conversation item updates in realtime session."""
 
     type: str = field(default="plugin.realtime_conversation_item", init=False)
-    item_id: Optional[str] = None
-    item_type: Optional[str] = (
-        None  # "message", "function_call", "function_call_output"
-    )
-    status: Optional[str] = None  # "completed", "in_progress", "incomplete"
-    role: Optional[str] = None  # "user", "assistant", "system"
-    content: Optional[list[dict[str, Any]]] = None
+    item_id: str | None = None
+    item_type: str | None = None  # "message", "function_call", "function_call_output"
+    status: str | None = None  # "completed", "in_progress", "incomplete"
+    role: str | None = None  # "user", "assistant", "system"
+    content: list[dict[str, Any]] | None = None
 
 
 @dataclass
@@ -73,9 +71,9 @@ class RealtimeErrorEvent(PluginBaseEvent):
     """Event emitted when a realtime error occurs."""
 
     type: str = field(default="plugin.realtime_error", init=False)
-    error: Optional[Exception] = None
-    error_code: Optional[str] = None
-    context: Optional[str] = None
+    error: Exception | None = None
+    error_code: str | None = None
+    context: str | None = None
     is_recoverable: bool = True
 
     @property
@@ -92,13 +90,13 @@ class LLMResponseChunkEvent(PluginBaseEvent):
     delta: str | None = None
     """The text delta that was added."""
 
-    item_id: Optional[str] = None
+    item_id: str | None = None
     """The ID of the output item that the text delta was added to."""
 
-    output_index: Optional[int] = None
+    output_index: int | None = None
     """The index of the output item that the text delta was added to."""
 
-    sequence_number: Optional[int] = None
+    sequence_number: int | None = None
     """The sequence number for this event."""
 
 
@@ -109,7 +107,7 @@ class LLMResponseCompletedEvent(PluginBaseEvent):
     type: str = field(default="plugin.llm_response_completed", init=False)
     original: Any = None
     text: str = ""
-    item_id: Optional[str] = None
+    item_id: str | None = None
 
 
 @dataclass
@@ -118,8 +116,8 @@ class ToolStartEvent(PluginBaseEvent):
 
     type: str = field(default="plugin.llm.tool.start", init=False)
     tool_name: str = ""
-    arguments: Optional[Dict[str, Any]] = None
-    tool_call_id: Optional[str] = None
+    arguments: dict[str, Any] | None = None
+    tool_call_id: str | None = None
 
 
 @dataclass
@@ -129,10 +127,10 @@ class ToolEndEvent(PluginBaseEvent):
     type: str = field(default="plugin.llm.tool.end", init=False)
     tool_name: str = ""
     success: bool = True
-    result: Optional[Any] = None
-    error: Optional[str] = None
-    tool_call_id: Optional[str] = None
-    execution_time_ms: Optional[float] = None
+    result: Any | None = None
+    error: str | None = None
+    tool_call_id: str | None = None
+    execution_time_ms: float | None = None
 
 
 @dataclass
@@ -141,7 +139,7 @@ class RealtimeUserSpeechTranscriptionEvent(PluginBaseEvent):
 
     type: str = field(default="plugin.realtime_user_speech_transcription", init=False)
     text: str = ""
-    original: Optional[Any] = None
+    original: Any | None = None
 
 
 @dataclass
@@ -150,4 +148,4 @@ class RealtimeAgentSpeechTranscriptionEvent(PluginBaseEvent):
 
     type: str = field(default="plugin.realtime_agent_speech_transcription", init=False)
     text: str = ""
-    original: Optional[Any] = None
+    original: Any | None = None

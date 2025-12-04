@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import os
-from typing import Optional, List, Literal
+from typing import Literal
 from concurrent.futures import ThreadPoolExecutor
 
 import aiortc
@@ -57,7 +57,7 @@ class LocalVLM(llm.VideoLLM):
         max_workers: int = 10,
         force_cpu: bool = False,
         model_name: str = "moondream/moondream3-preview",
-        options: Optional[AgentOptions] = None,
+        options: AgentOptions | None = None,
     ):
         super().__init__()
 
@@ -85,8 +85,8 @@ class LocalVLM(llm.VideoLLM):
         self._frame_buffer: VideoLatestNQueue[av.VideoFrame] = VideoLatestNQueue(
             maxlen=10
         )
-        self._latest_frame: Optional[av.VideoFrame] = None
-        self._video_forwarder: Optional[VideoForwarder] = None
+        self._latest_frame: av.VideoFrame | None = None
+        self._video_forwarder: VideoForwarder | None = None
         self._stt_subscription_setup = False
         self._processing_lock = asyncio.Lock()
 
@@ -178,7 +178,7 @@ class LocalVLM(llm.VideoLLM):
     async def watch_video_track(
         self,
         track: aiortc.mediastreams.MediaStreamTrack,
-        shared_forwarder: Optional[VideoForwarder] = None,
+        shared_forwarder: VideoForwarder | None = None,
     ) -> None:
         """Setup video forwarding and STT subscription."""
         if self._video_forwarder is not None and shared_forwarder is None:
@@ -237,9 +237,7 @@ class LocalVLM(llm.VideoLLM):
         result = "".join(chunks)
         return result
 
-    async def _process_frame(
-        self, text: Optional[str] = None
-    ) -> Optional[LLMResponseEvent]:
+    async def _process_frame(self, text: str | None = None) -> LLMResponseEvent | None:
         if self._latest_frame is None:
             logger.warning("No frames available, skipping Moondream processing")
             return None
@@ -327,8 +325,8 @@ class LocalVLM(llm.VideoLLM):
     async def simple_response(
         self,
         text: str,
-        processors: Optional[List[Processor]] = None,
-        participant: Optional[Participant] = None,
+        processors: list[Processor] | None = None,
+        participant: Participant | None = None,
     ) -> LLMResponseEvent:
         """
         simple_response is a standardized way to create a response.

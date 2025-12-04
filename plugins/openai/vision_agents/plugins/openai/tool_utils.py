@@ -1,14 +1,14 @@
 """Shared utilities for OpenAI tool/function calling."""
 
 import json
-from typing import Any, Dict, List
+from typing import Any
 
 from vision_agents.core.llm.llm_types import NormalizedToolCallItem, ToolSchema
 
 
 def convert_tools_to_openai_format(
-    tools: List[ToolSchema], for_realtime: bool = False
-) -> List[Dict[str, Any]]:
+    tools: list[ToolSchema], for_realtime: bool = False
+) -> list[dict[str, Any]]:
     """Convert ToolSchema to OpenAI format.
 
     Args:
@@ -28,7 +28,7 @@ def convert_tools_to_openai_format(
         params.setdefault("properties", {})
         params.setdefault("additionalProperties", False)
 
-        tool_def: Dict[str, Any] = {
+        tool_def: dict[str, Any] = {
             "type": "function",
             "name": t.get("name", "unnamed_tool"),
             "description": t.get("description", "") or "",

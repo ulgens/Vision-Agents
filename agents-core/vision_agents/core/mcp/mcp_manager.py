@@ -1,7 +1,7 @@
 """MCP Manager for handling MCP server connections and tool management."""
 
 import logging
-from typing import List, Any, Dict
+from typing import Any
 from ..mcp import MCPBaseServer
 from ..mcp.tool_converter import MCPToolConverter
 
@@ -11,7 +11,7 @@ class MCPManager:
 
     def __init__(
         self,
-        mcp_servers: List[MCPBaseServer],
+        mcp_servers: list[MCPBaseServer],
         llm,
         logger: logging.Logger | logging.LoggerAdapter,
     ):
@@ -74,7 +74,7 @@ class MCPManager:
                 )
                 # Continue with other servers even if one fails
 
-    async def get_all_tools(self) -> List[Any]:
+    async def get_all_tools(self) -> list[Any]:
         """Get all available tools from all connected MCP servers."""
         tools = []
 
@@ -91,7 +91,7 @@ class MCPManager:
         return tools
 
     async def call_tool(
-        self, server_index: int, tool_name: str, arguments: Dict[str, Any]
+        self, server_index: int, tool_name: str, arguments: dict[str, Any]
     ) -> Any:
         """Call a tool on a specific MCP server.
 

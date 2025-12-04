@@ -42,8 +42,8 @@ class STT(stt.STT):
     def __init__(
         self,
         task: str = "transcribe",
-        target_language: Optional[str] = None,
-        client: Optional[fal_client.AsyncClient] = None,
+        target_language: str | None = None,
+        client: fal_client.AsyncClient | None = None,
     ):
         """
         Initialize Wizper STT.

@@ -2,7 +2,7 @@ import asyncio
 import logging
 import os
 from asyncio import CancelledError
-from typing import Any, Optional, cast
+from typing import Any, cast
 
 import aiortc
 import av
@@ -66,7 +66,7 @@ class RestylingProcessor(AudioVideoProcessor, VideoProcessorMixin, VideoPublishe
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         model: RealTimeModels = "mirage_v2",
         initial_prompt: str = "Cyberpunk city",
         enrich: bool = True,
@@ -112,13 +112,13 @@ class RestylingProcessor(AudioVideoProcessor, VideoProcessorMixin, VideoPublishe
 
         self._decart_client = DecartClient(api_key=self.api_key, **kwargs)
         self._video_track = DecartVideoTrack(width=width, height=height)
-        self._realtime_client: Optional[RealtimeClient] = None
+        self._realtime_client: RealtimeClient | None = None
 
         self._connected = False
         self._connecting = False
-        self._processing_task: Optional[asyncio.Task] = None
-        self._frame_receiving_task: Optional[asyncio.Task] = None
-        self._current_track: Optional[MediaStreamTrack] = None
+        self._processing_task: asyncio.Task | None = None
+        self._frame_receiving_task: asyncio.Task | None = None
+        self._current_track: MediaStreamTrack | None = None
         self._on_connection_change_callback = None
 
         logger.info(
@@ -139,9 +139,7 @@ class RestylingProcessor(AudioVideoProcessor, VideoProcessorMixin, VideoPublishe
     def publish_video_track(self) -> VideoStreamTrack:
         return self._video_track
 
-    async def update_prompt(
-        self, prompt_text: str, enrich: Optional[bool] = None
-    ) -> None:
+    async def update_prompt(self, prompt_text: str, enrich: bool | None = None) -> None:
         """
         Updates the prompt used for the Decart real-time client. This method allows
         changing the current prompt and optionally specifies whether to enrich the

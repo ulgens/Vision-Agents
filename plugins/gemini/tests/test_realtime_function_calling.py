@@ -5,7 +5,7 @@ Test function calling functionality in Gemini Realtime class.
 import asyncio
 import os
 import pytest
-from typing import List, Dict, Any
+from typing import Any
 from dotenv import load_dotenv
 
 from vision_agents.plugins import gemini
@@ -103,12 +103,12 @@ class TestGeminiRealtimeFunctionCalling:
         realtime = realtime_instance
 
         # Track function calls and responses
-        function_calls: List[Dict[str, Any]] = []
-        text_responses: List[str] = []
+        function_calls: list[dict[str, Any]] = []
+        text_responses: list[str] = []
 
         # Register a weather function
         @realtime.register_function(description="Get current weather for a location")
-        def get_weather(location: str) -> Dict[str, str]:
+        def get_weather(location: str) -> dict[str, str]:
             """Get weather information for a location."""
             function_calls.append({"name": "get_weather", "location": location})
             return {
@@ -153,12 +153,12 @@ class TestGeminiRealtimeFunctionCalling:
         realtime = realtime_instance
 
         # Track function calls and responses
-        function_calls: List[Dict[str, Any]] = []
-        text_responses: List[str] = []
+        function_calls: list[dict[str, Any]] = []
+        text_responses: list[str] = []
 
         # Register a function that will raise an error
         @realtime.register_function(description="A function that sometimes fails")
-        def unreliable_function(input_data: str) -> Dict[str, Any]:
+        def unreliable_function(input_data: str) -> dict[str, Any]:
             """A function that raises an error for testing."""
             function_calls.append({"name": "unreliable_function", "input": input_data})
             if "error" in input_data.lower():
@@ -200,18 +200,18 @@ class TestGeminiRealtimeFunctionCalling:
         realtime = realtime_instance
 
         # Track function calls
-        function_calls: List[Dict[str, Any]] = []
-        text_responses: List[str] = []
+        function_calls: list[dict[str, Any]] = []
+        text_responses: list[str] = []
 
         # Register multiple functions
         @realtime.register_function(description="Get current time")
-        def get_time() -> Dict[str, str]:
+        def get_time() -> dict[str, str]:
             """Get current time."""
             function_calls.append({"name": "get_time"})
             return {"time": "2024-01-15 14:30:00", "timezone": "UTC"}
 
         @realtime.register_function(description="Get system status")
-        def get_status() -> Dict[str, str]:
+        def get_status() -> dict[str, str]:
             """Get system status."""
             function_calls.append({"name": "get_status"})
             return {"status": "healthy", "uptime": "24h"}
